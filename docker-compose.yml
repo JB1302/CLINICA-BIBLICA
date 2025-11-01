@@ -1,0 +1,8 @@
+services:
+  clinicaBiblica-web:
+    image: php:8.1-apache
+    container_name: clinicaBiblica-web
+    ports:
+      - "8083:80"
+    volumes:
+      - ./app/VIEW:/var/www/html

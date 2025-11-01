@@ -147,11 +147,41 @@
 
 </main>
 
-<footer class="py-5 mt-auto" style="color:#fff;">
-  <div class="container text-center small">
-    © 2025 Clínica Bíblica. Todos los derechos reservados.
-  </div>
-</footer>
+
+  <footer class="py-5 mt-auto" style=" color:#fff;">
+    <div class="container">
+      <div class="row align-items-center">
+
+        <div class="col-md-6 text-md-start text-center mb-4 mb-md-0">
+          <p class="mb-1">Correo: <a href="mailto:titulo@correo.com" class="text-light text-decoration-none">titulo@correo.com</a></p>
+          <p class="mb-1">Teléfono: 555-555-555</p>
+          <p class="mb-0">Dirección: 1234, Calle Principal, Ciudad Real</p>
+        </div>
+
+        <div class="col-md-6 text-md-end text-center">
+          <div class="mb-3">
+            <a href="#" class="me-3 text-light"><i class="fab fa-twitter fa-lg"></i></a>
+            <a href="#" class="me-3 text-light"><i class="fab fa-instagram fa-lg"></i></a>
+            <a href="#" class="text-light"><i class="fab fa-facebook fa-lg"></i></a>
+          </div>
+
+          <form class="d-inline-flex justify-content-center justify-content-md-end">
+            <input type="email" class="form-control bg-dark text-white border-light me-2" placeholder="Email" style="max-width: 220px;">
+            <button class="btn btn-outline-light" type="submit">Suscribirse</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="text-center mt-3 mb-2 small">
+        <a href="#" class="text-light text-decoration-none me-3">FAQ</a>
+        <a href="#" class="text-light text-decoration-none me-3">SETTINGS</a>
+      </div>
+
+      <hr class="border-light mt-3">
+
+      <p class="text-center mb-0 small">© 2025 Clinica Biblica. Todos los derechos reservados.</p>
+    </div>
+  </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
