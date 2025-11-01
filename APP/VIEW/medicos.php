@@ -60,13 +60,179 @@
 
 
 
-  <main class="flex-fill d-flex align-items-center justify-content-center text-center">
-    <div>
-      <h1 class="fw-bold mb-3">Bienvenido a Clinica Biblica</h1>
-      <p class="lead">Texto Placeholder para el Index. Lore Ipsum Tsurum Rigatori</p>
-    </div>
-  </main>
+<main class="container py-5">
 
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary"><i class="fa-solid fa-user-doctor me-2"></i>Médicos</h2>
+
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearMedico">
+      <i class="fa-solid fa-plus me-1"></i> Nuevo médico
+    </button>
+  </div>
+
+  <!-- BÚSQUEDA -->
+  <form class="row g-2 mb-4" method="get" action="/medicos.php">
+    <div class="col-md-4">
+      <input type="text" name="q" class="form-control" placeholder="Buscar por nombre o colegiado" value="">
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="colegiado" class="form-control" placeholder="N° colegiado" value="">
+    </div>
+    <div class="col-md-3">
+      <select name="especialidad" class="form-select">
+        <option value="">Todas las especialidades</option>
+        <!-- Rellenar con PHP desde ESPECIALIDAD -->
+        <option value="1">Medicina General</option>
+        <option value="2">Pediatría</option>
+        <option value="3">Cardiología</option>
+      </select>
+    </div>
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass me-1"></i> Buscar</button>
+    </div>
+  </form>
+
+  <div class="table-responsive shadow-sm">
+    <table class="table table-hover align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Colegiado</th>
+          <th>Especialidad</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>7</td>
+          <td>Dr. Carlos Quesada</td>
+          <td>MED-45123</td>
+          <td data-especialidad-id="1">Medicina General</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" data-bs-target="#modalEditarMedico">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarMedico">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+
+        <tr>
+          <td>3</td>
+          <td>Dra. Laura Solano</td>
+          <td>MED-33890</td>
+          <td data-especialidad-id="3">Cardiología</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" data-bs-target="#modalEditarMedico">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarMedico">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<div class="modal fade" id="modalCrearMedico" tabindex="-1" aria-labelledby="lblCrearMedico" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/medicos.php?action=create">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="lblCrearMedico"><i class="fa-solid fa-user-plus me-2"></i>Nuevo médico</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="mb-3">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" name="nombre" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">N° Colegiado</label>
+          <input type="text" name="colegiado" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Especialidad</label>
+          <select name="especialidad_id" class="form-select" required>
+            <option value="">Selecciona...</option>
+            <option value="1">Medicina General</option>
+            <option value="2">Pediatría</option>
+            <option value="3">Cardiología</option>
+          </select>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cerrar</button>
+        <button class="btn btn-primary" type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEditarMedico" tabindex="-1" aria-labelledby="lblEditarMedico" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/medicos.php?action=update">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title text-dark" id="lblEditarMedico"><i class="fa-solid fa-pen me-2"></i>Editar médico</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id" value="7">
+
+        <div class="mb-3">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" name="nombre" class="form-control" value="Dr. Carlos Quesada" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">N° Colegiado</label>
+          <input type="text" name="colegiado" class="form-control" value="MED-45123" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Especialidad</label>
+          <select name="especialidad_id" class="form-select" required>
+            <option value="1" selected>Medicina General</option>
+            <option value="2">Pediatría</option>
+            <option value="3">Cardiología</option>
+          </select>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cerrar</button>
+        <button class="btn btn-warning" type="submit">Actualizar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="modalEliminarMedico" tabindex="-1" aria-labelledby="lblEliminarMedico" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="post" action="/medicos.php?action=delete">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="lblEliminarMedico"><i class="fa-solid fa-trash me-2"></i>Eliminar médico</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id" value="7">
+        <p class="mb-0">¿Seguro que deseas eliminar este registro?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cancelar</button>
+        <button class="btn btn-danger" type="submit">Eliminar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 
 

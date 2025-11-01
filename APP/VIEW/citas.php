@@ -96,7 +96,6 @@
     </div>
   </form>
 
-  <!-- TABLA -->
   <div class="table-responsive shadow-sm">
     <table class="table table-hover align-middle">
       <thead class="table-primary">
@@ -111,7 +110,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Filas de ejemplo (luego reemplaza con PHP) -->
         <tr>
           <td>101</td>
           <td data-paciente-id="1">Ana Rodríguez</td>
@@ -173,7 +171,6 @@
   </div>
 </main>
 
-<!-- MODAL: NUEVA CITA -->
 <div class="modal fade" id="modalNuevaCita" tabindex="-1" aria-labelledby="lblNuevaCita" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -190,7 +187,6 @@
                 <option value="">Selecciona...</option>
                 <option value="1">Ana Rodríguez</option>
                 <option value="2">Luis Pérez</option>
-                <!-- cargar desde DB -->
               </select>
             </div>
             <div class="col-md-6">
@@ -199,7 +195,6 @@
                 <option value="">Selecciona...</option>
                 <option value="7">Dr. Quesada</option>
                 <option value="3">Dra. Solano</option>
-                <!-- cargar desde DB -->
               </select>
             </div>
 
@@ -237,7 +232,6 @@
   </div>
 </div>
 
-<!-- MODAL: EDITAR / REPROGRAMAR -->
 <div class="modal fade" id="modalEditarCita" tabindex="-1" aria-labelledby="lblEditarCita" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -298,7 +292,6 @@
   </div>
 </div>
 
-<!-- MODAL: CANCELAR CITA -->
 <div class="modal fade" id="modalCancelarCita" tabindex="-1" aria-labelledby="lblCancelarCita" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
