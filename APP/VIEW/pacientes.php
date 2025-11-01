@@ -59,8 +59,7 @@
 
 
 
-
-  <main class="container py-5">
+<main class="container py-5">
 
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold text-primary"><i class="fa-solid fa-user me-2"></i>Pacientes</h2>
@@ -70,6 +69,7 @@
     </button>
   </div>
 
+  <!-- BUSCADOR -->
   <form class="row g-2 mb-4">
     <div class="col-md-4">
       <input type="text" class="form-control" placeholder="Buscar por nombre o ID">
@@ -98,6 +98,7 @@
         </tr>
       </thead>
       <tbody>
+        <!-- Ejemplo estático, luego se reemplaza con PHP -->
         <tr>
           <td>1</td>
           <td>Ana Rodríguez</td>
@@ -117,6 +118,82 @@
   </div>
 
 </main>
+
+
+<!-- MODAL AGREGAR -->
+<div class="modal fade" id="modalAgregar" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Agregar Paciente</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Identificación</label>
+            <input type="text" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <input type="text" class="form-control" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            Guardar
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL EDITAR -->
+<div class="modal fade" id="modalEditar" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title text-dark">Editar Paciente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" class="form-control" value="Ana Rodríguez">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Identificación</label>
+            <input type="text" class="form-control" value="1-1234-5678">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <input type="text" class="form-control" value="8888-0000">
+          </div>
+
+          <button type="submit" class="btn btn-warning w-100">
+            Actualizar
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 
 <div class="modal fade" id="modalAgregar" tabindex="-1">

@@ -60,12 +60,267 @@
 
 
 
-  <main class="flex-fill d-flex align-items-center justify-content-center text-center">
-    <div>
-      <h1 class="fw-bold mb-3">Bienvenido a Clinica Biblica</h1>
-      <p class="lead">Texto Placeholder para el Index. Lore Ipsum Tsurum Rigatori</p>
+<main class="container py-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary"><i class="fa-solid fa-calendar-check me-2"></i>Citas</h2>
+
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
+      <i class="fa-solid fa-plus me-1"></i> Nueva cita
+    </button>
+  </div>
+
+  <!-- FILTROS -->
+  <form class="row g-2 mb-4">
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Estado</label>
+      <select class="form-select" name="estado">
+        <option value="">Todos</option>
+        <option>Pendiente</option>
+        <option>Confirmada</option>
+        <option>Atendida</option>
+        <option>Cancelada</option>
+        <option>No asistió</option>
+      </select>
     </div>
-  </main>
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Fecha desde</label>
+      <input type="date" class="form-control" name="desde">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Fecha hasta</label>
+      <input type="date" class="form-control" name="hasta">
+    </div>
+    <div class="col-md-3 d-grid align-self-end">
+      <button class="btn btn-secondary"><i class="fa-solid fa-filter me-1"></i> Aplicar filtros</button>
+    </div>
+  </form>
+
+  <!-- TABLA -->
+  <div class="table-responsive shadow-sm">
+    <table class="table table-hover align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th>ID</th>
+          <th>Paciente</th>
+          <th>Médico</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Filas de ejemplo (luego reemplaza con PHP) -->
+        <tr>
+          <td>101</td>
+          <td data-paciente-id="1">Ana Rodríguez</td>
+          <td data-medico-id="7">Dr. Quesada</td>
+          <td>2025-11-05</td>
+          <td>09:30</td>
+          <td>
+            <span class="badge bg-warning text-dark">Pendiente</span>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-warning me-1 btn-editar"
+              data-id="101"
+              data-paciente="1"
+              data-medico="7"
+              data-fecha="2025-11-05"
+              data-hora="09:30"
+              data-estado="Pendiente"
+              data-bs-toggle="modal" data-bs-target="#modalEditarCita">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn btn-sm btn-danger btn-cancelar"
+              data-id="101"
+              data-bs-toggle="modal" data-bs-target="#modalCancelarCita">
+              <i class="fa-solid fa-ban"></i>
+            </button>
+          </td>
+        </tr>
+
+        <tr>
+          <td>102</td>
+          <td data-paciente-id="2">Luis Pérez</td>
+          <td data-medico-id="3">Dra. Solano</td>
+          <td>2025-11-06</td>
+          <td>14:00</td>
+          <td>
+            <span class="badge bg-success">Confirmada</span>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-warning me-1 btn-editar"
+              data-id="102"
+              data-paciente="2"
+              data-medico="3"
+              data-fecha="2025-11-06"
+              data-hora="14:00"
+              data-estado="Confirmada"
+              data-bs-toggle="modal" data-bs-target="#modalEditarCita">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn btn-sm btn-danger btn-cancelar"
+              data-id="102"
+              data-bs-toggle="modal" data-bs-target="#modalCancelarCita">
+              <i class="fa-solid fa-ban"></i>
+            </button>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<!-- MODAL: NUEVA CITA -->
+<div class="modal fade" id="modalNuevaCita" tabindex="-1" aria-labelledby="lblNuevaCita" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="lblNuevaCita"><i class="fa-solid fa-plus me-2"></i>Nueva cita</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formNuevaCita">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Paciente</label>
+              <select class="form-select" name="paciente" required>
+                <option value="">Selecciona...</option>
+                <option value="1">Ana Rodríguez</option>
+                <option value="2">Luis Pérez</option>
+                <!-- cargar desde DB -->
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Médico</label>
+              <select class="form-select" name="medico" required>
+                <option value="">Selecciona...</option>
+                <option value="7">Dr. Quesada</option>
+                <option value="3">Dra. Solano</option>
+                <!-- cargar desde DB -->
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Fecha</label>
+              <input type="date" class="form-control" name="fecha" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Hora</label>
+              <input type="time" class="form-control" name="hora" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Estado</label>
+              <select class="form-select" name="estado" required>
+                <option>Pendiente</option>
+                <option>Confirmada</option>
+                <option>Atendida</option>
+                <option>Cancelada</option>
+                <option>No asistió</option>
+              </select>
+            </div>
+
+            <div class="col-12 d-none" id="wrapMotivoNuevo">
+              <label class="form-label">Motivo de cancelación</label>
+              <textarea class="form-control" name="motivo" rows="2" placeholder="Motivo..." ></textarea>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary w-100">Guardar cita</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDITAR / REPROGRAMAR -->
+<div class="modal fade" id="modalEditarCita" tabindex="-1" aria-labelledby="lblEditarCita" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title text-dark" id="lblEditarCita"><i class="fa-solid fa-pen me-2"></i>Editar cita</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditarCita">
+          <input type="hidden" name="id" id="editId">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Paciente</label>
+              <select class="form-select" name="paciente" id="editPaciente" required>
+                <option value="1">Ana Rodríguez</option>
+                <option value="2">Luis Pérez</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Médico</label>
+              <select class="form-select" name="medico" id="editMedico" required>
+                <option value="7">Dr. Quesada</option>
+                <option value="3">Dra. Solano</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Fecha</label>
+              <input type="date" class="form-control" name="fecha" id="editFecha" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Hora</label>
+              <input type="time" class="form-control" name="hora" id="editHora" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Estado</label>
+              <select class="form-select" name="estado" id="editEstado" required>
+                <option>Pendiente</option>
+                <option>Confirmada</option>
+                <option>Atendida</option>
+                <option>Cancelada</option>
+                <option>No asistió</option>
+              </select>
+            </div>
+
+            <div class="col-12 d-none" id="wrapMotivoEditar">
+              <label class="form-label">Motivo de cancelación</label>
+              <textarea class="form-control" name="motivo" id="editMotivo" rows="2" placeholder="Motivo..."></textarea>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <button type="submit" class="btn btn-warning w-100">Actualizar cita</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CANCELAR CITA -->
+<div class="modal fade" id="modalCancelarCita" tabindex="-1" aria-labelledby="lblCancelarCita" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="lblCancelarCita"><i class="fa-solid fa-ban me-2"></i>Cancelar cita</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formCancelarCita">
+          <input type="hidden" name="id" id="cancelId">
+          <p class="mb-3">Confirma la cancelación de la cita <strong id="cancelTextoId">#</strong>. Indica el motivo:</p>
+          <div class="mb-3">
+            <label class="form-label">Motivo de cancelación</label>
+            <textarea class="form-control" name="motivo" id="cancelMotivo" rows="3" placeholder="Motivo..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-danger w-100">Cancelar cita</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 
