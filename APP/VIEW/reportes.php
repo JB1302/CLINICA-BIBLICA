@@ -47,8 +47,8 @@
               <i class="fa-solid fa-user-circle fs-5"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/views/login.php">Iniciar sesión</a></li>
-              <li><a class="dropdown-item" href="/views/register.php">Registrarse</a></li>
+              <li><a class="dropdown-item" href="/login.php">Iniciar sesión</a></li>
+              <li><a class="dropdown-item" href="/register.php">Registrarse</a></li>
             </ul>
           </li>
 
@@ -60,12 +60,188 @@
 
 
 
-  <main class="flex-fill d-flex align-items-center justify-content-center text-center">
-    <div>
-      <h1 class="fw-bold mb-3">Bienvenido a Clinica Biblica</h1>
-      <p class="lead">Texto Placeholder para el Index. Lore Ipsum Tsurum Rigatori</p>
+<main class="container py-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary"><i class="fa-solid fa-chart-line me-2"></i>Reportes</h2>
+  </div>
+
+  <!-- FILTROS -->
+  <form class="row g-2 mb-4" method="get" action="/reportes.php">
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Fecha desde</label>
+      <input type="date" class="form-control" name="desde" value="">
     </div>
-  </main>
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Fecha hasta</label>
+      <input type="date" class="form-control" name="hasta" value="">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label small mb-1">Estado de cita</label>
+      <select class="form-select" name="estado">
+        <option value="">Todos</option>
+        <option>Pendiente</option>
+        <option>Confirmada</option>
+        <option>Atendida</option>
+        <option>Cancelada</option>
+        <option>No asistió</option>
+      </select>
+    </div>
+    <div class="col-md-3 d-grid align-self-end">
+      <button class="btn btn-secondary"><i class="fa-solid fa-filter me-1"></i> Aplicar</button>
+    </div>
+  </form>
+
+  <!-- KPIs -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="text-muted mb-1 small">Pacientes activos</p>
+              <h3 class="mb-0 fw-bold"><?= htmlspecialchars($kpi_pacientes ?? '—') ?></h3>
+            </div>
+            <i class="fa-solid fa-users fa-2x text-primary"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="text-muted mb-1 small">Citas en rango</p>
+              <h3 class="mb-0 fw-bold"><?= htmlspecialchars($kpi_citas ?? '—') ?></h3>
+            </div>
+            <i class="fa-solid fa-calendar-check fa-2x text-primary"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <p class="text-muted mb-1 small">Atenciones registradas</p>
+              <h3 class="mb-0 fw-bold"><?= htmlspecialchars($kpi_atenciones ?? '—') ?></h3>
+            </div>
+            <i class="fa-solid fa-stethoscope fa-2x text-primary"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLAS DE RESUMEN -->
+  <div class="row g-4">
+    <!-- Citas por estado -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-light">
+          <strong>Citas por estado</strong> <?= isset($filtro_titulo) ? htmlspecialchars($filtro_titulo) : '' ?>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0 align-middle">
+              <thead class="table-primary">
+                <tr>
+                  <th>Estado</th>
+                  <th class="text-end">Cantidad</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (!empty($res_citas_estado)): ?>
+                  <?php foreach ($res_citas_estado as $r): ?>
+                  <tr>
+                    <td><?= htmlspecialchars($r['estado']) ?></td>
+                    <td class="text-end"><?= htmlspecialchars($r['cantidad']) ?></td>
+                  </tr>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <tr><td colspan="2" class="text-center text-muted py-3">Sin datos</td></tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Atenciones por médico -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-light">
+          <strong>Atenciones por médico</strong>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0 align-middle">
+              <thead class="table-primary">
+                <tr>
+                  <th>Médico</th>
+                  <th class="text-end">Atenciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (!empty($res_atenciones_medico)): ?>
+                  <?php foreach ($res_atenciones_medico as $r): ?>
+                  <tr>
+                    <td><?= htmlspecialchars($r['medico']) ?></td>
+                    <td class="text-end"><?= htmlspecialchars($r['atenciones']) ?></td>
+                  </tr>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <tr><td colspan="2" class="text-center text-muted py-3">Sin datos</td></tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pacientes nuevos por mes -->
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <strong>Pacientes nuevos por mes</strong>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0 align-middle">
+              <thead class="table-primary">
+                <tr>
+                  <th>Mes</th>
+                  <th class="text-end">Nuevos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (!empty($res_pacientes_mes)): ?>
+                  <?php foreach ($res_pacientes_mes as $r): ?>
+                  <tr>
+                    <td><?= htmlspecialchars($r['mes']) ?></td>
+                    <td class="text-end"><?= htmlspecialchars($r['nuevos']) ?></td>
+                  </tr>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <tr><td colspan="2" class="text-center text-muted py-3">Sin datos</td></tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
 
 
 

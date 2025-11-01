@@ -35,8 +35,8 @@
             <i class="fa-solid fa-user-circle fs-5"></i>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="/views/login.php">Iniciar sesión</a></li>
-            <li><a class="dropdown-item" href="/views/register.php">Registrarse</a></li>
+            <li><a class="dropdown-item" href="/login.php">Iniciar sesión</a></li>
+            <li><a class="dropdown-item" href="/register.php">Registrarse</a></li>
           </ul>
         </li>
       </ul>

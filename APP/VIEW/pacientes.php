@@ -47,8 +47,8 @@
               <i class="fa-solid fa-user-circle fs-5"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/views/login.php">Iniciar sesión</a></li>
-              <li><a class="dropdown-item" href="/views/register.php">Registrarse</a></li>
+              <li><a class="dropdown-item" href="/login.php">Iniciar sesión</a></li>
+              <li><a class="dropdown-item" href="/register.php">Registrarse</a></li>
             </ul>
           </li>
 
@@ -69,7 +69,7 @@
     </button>
   </div>
 
-  <!-- BUSCADOR -->
+
   <form class="row g-2 mb-4">
     <div class="col-md-4">
       <input type="text" class="form-control" placeholder="Buscar por nombre o ID">
@@ -85,7 +85,7 @@
     </div>
   </form>
 
-  <!-- TABLA PACIENTES -->
+
   <div class="table-responsive shadow-sm">
     <table class="table table-hover align-middle">
       <thead class="table-primary">
@@ -98,7 +98,7 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Ejemplo estático, luego se reemplaza con PHP -->
+
         <tr>
           <td>1</td>
           <td>Ana Rodríguez</td>
