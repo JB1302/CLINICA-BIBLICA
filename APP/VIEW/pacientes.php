@@ -60,12 +60,136 @@
 
 
 
-  <main class="flex-fill d-flex align-items-center justify-content-center text-center">
-    <div>
-      <h1 class="fw-bold mb-3">Bienvenido a Clinica Biblica</h1>
-      <p class="lead">Texto Placeholder para el Index. Lore Ipsum Tsurum Rigatori</p>
+  <main class="container py-5">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary"><i class="fa-solid fa-user me-2"></i>Pacientes</h2>
+
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregar">
+      <i class="fa-solid fa-plus me-1"></i> Nuevo Paciente
+    </button>
+  </div>
+
+  <form class="row g-2 mb-4">
+    <div class="col-md-4">
+      <input type="text" class="form-control" placeholder="Buscar por nombre o ID">
     </div>
-  </main>
+    <div class="col-md-3">
+      <input type="text" class="form-control" placeholder="Identificación">
+    </div>
+    <div class="col-md-3">
+      <input type="text" class="form-control" placeholder="Teléfono">
+    </div>
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-secondary"><i class="fa-solid fa-filter me-1"></i> Filtrar</button>
+    </div>
+  </form>
+
+  <!-- TABLA PACIENTES -->
+  <div class="table-responsive shadow-sm">
+    <table class="table table-hover align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Identificación</th>
+          <th>Teléfono</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Ana Rodríguez</td>
+          <td>1-1234-5678</td>
+          <td>8888-0000</td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" data-bs-target="#modalEditar">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn btn-sm btn-danger">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+
+<div class="modal fade" id="modalAgregar" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Agregar Paciente</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Identificación</label>
+            <input type="text" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <input type="text" class="form-control" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">
+            Guardar
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modalEditar" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title text-dark">Editar Paciente</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" class="form-control" value="Ana Rodríguez">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Identificación</label>
+            <input type="text" class="form-control" value="1-1234-5678">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <input type="text" class="form-control" value="8888-0000">
+          </div>
+
+          <button type="submit" class="btn btn-warning w-100">
+            Actualizar
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
 

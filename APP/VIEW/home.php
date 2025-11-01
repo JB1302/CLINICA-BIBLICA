@@ -56,7 +56,6 @@
 
     <div class="row justify-content-center">
       <div class="col-12 col-md-8 col-lg-7">
-        <!-- Tarjeta moderna objetivos -->
         <div class="goals-card shadow-lg">
           <div class="goals-head">
             <span class="goals-chip"><i class="fa-solid fa-bullseye me-2"></i>Objetivos</span>
