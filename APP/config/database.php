@@ -4,16 +4,18 @@ class Database {
 
   public static function get() {
     if (!self::$conn) {
-      $username = 'clinica';
-      $password = 'clinica123';
-      // 👇 clave: usar el host del PC desde Docker
-      $connectionString = '//host.docker.internal:1521/xe'; // o XEPDB1 si tu esquema está allí
+      $username = 'JBARRANTES40180';
+      $password = '123';
+      $connectionString = '//host.docker.internal:1521/XEPDB1';
 
-      self::$conn = oci_connect($username, $password, $connectionString, 'AL32UTF8');
-      if (!self::$conn) {
+      $conn = oci_connect($username, $password, $connectionString, 'AL32UTF8');
+      if (!$conn) {
         $e = oci_error();
-        throw new Exception('Error de conexión: '.$e['message']);
+        throw new Exception('Error de conexión: ' . $e['message']);
       }
+
+      self::$conn = $conn;
+      register_shutdown_function(fn() => oci_close(self::$conn));
     }
     return self::$conn;
   }
