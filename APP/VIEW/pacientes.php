@@ -59,214 +59,241 @@
 
 
 
-<main class="container py-5">
+  <!-- MAIN -->
+  <main class="container py-5">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-primary"><i class="fa-solid fa-user me-2"></i>Pacientes</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold text-primary"><i class="fa-solid fa-user me-2"></i>Pacientes</h2>
 
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregar">
-      <i class="fa-solid fa-plus me-1"></i> Nuevo Paciente
-    </button>
-  </div>
-
-
-  <form class="row g-2 mb-4">
-    <div class="col-md-4">
-      <input type="text" class="form-control" placeholder="Buscar por nombre o ID">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregar">
+        <i class="fa-solid fa-plus me-1"></i> Nuevo Paciente
+      </button>
     </div>
-    <div class="col-md-3">
-      <input type="text" class="form-control" placeholder="Identificación">
-    </div>
-    <div class="col-md-3">
-      <input type="text" class="form-control" placeholder="Teléfono">
-    </div>
-    <div class="col-md-2 d-grid">
-      <button class="btn btn-secondary"><i class="fa-solid fa-filter me-1"></i> Filtrar</button>
-    </div>
-  </form>
 
-
-  <div class="table-responsive shadow-sm">
-    <table class="table table-hover align-middle">
-      <thead class="table-primary">
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Identificación</th>
-          <th>Teléfono</th>
-          <th class="text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-
-        <tr>
-          <td>1</td>
-          <td>Ana Rodríguez</td>
-          <td>1-1234-5678</td>
-          <td>8888-0000</td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" data-bs-target="#modalEditar">
-              <i class="fa-solid fa-pen"></i>
-            </button>
-            <button class="btn btn-sm btn-danger">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-</main>
-
-
-<!-- MODAL AGREGAR -->
-<div class="modal fade" id="modalAgregar" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Agregar Paciente</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <form class="row g-2 mb-4">
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Buscar por nombre o ID">
       </div>
-      <div class="modal-body">
-
-        <form>
-          <div class="mb-3">
-            <label class="form-label">Nombre completo</label>
-            <input type="text" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Identificación</label>
-            <input type="text" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Teléfono</label>
-            <input type="text" class="form-control" required>
-          </div>
-
-          <button type="submit" class="btn btn-primary w-100">
-            Guardar
-          </button>
-        </form>
-
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Identificación">
       </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Teléfono">
+      </div>
+      <div class="col-md-2 d-grid">
+        <button class="btn btn-secondary" type="button"><i class="fa-solid fa-filter me-1"></i> Filtrar</button>
+      </div>
+    </form>
+
+    <!-- TABLA -->
+    <div class="table-responsive shadow-sm">
+      <table class="table table-hover align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>ID</th>
+            <th>Cédula</th>
+            <th>Primer Nombre</th>
+            <th>Segundo Nombre</th>
+            <th>Primer Apellido</th>
+            <th>Segundo Apellido</th>
+            <th>Fecha Nacimiento</th>
+            <th>Sexo</th>
+            <th>Observaciones</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Correo Electrónico</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <!-- Valor Template-->
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>1-1234-5678</td>
+            <td>Ana</td>
+            <td>María</td>
+            <td>Rodríguez</td>
+            <td>Gómez</td>
+            <td>1995-07-12</td>
+            <td>F</td>
+            <td>Control anual</td>
+            <td>8888-0000</td>
+            <td>San José, Costa Rica</td>
+            <td>ana.rodriguez@example.com</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" data-bs-target="#modalEditar">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button class="btn btn-sm btn-danger">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
 
+  </main>
 
-<!-- MODAL EDITAR -->
-<div class="modal fade" id="modalEditar" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-warning">
-        <h5 class="modal-title text-dark">Editar Paciente</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
+  <!-- MODAL AGREGAR -->
+  <div class="modal fade" id="modalAgregar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Agregar Paciente</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formAgregar">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Cédula</label>
+                <input type="text" class="form-control" required>
+              </div>
 
-        <form>
-          <div class="mb-3">
-            <label class="form-label">Nombre completo</label>
-            <input type="text" class="form-control" value="Ana Rodríguez">
-          </div>
+              <div class="col-md-4">
+                <label class="form-label">Primer Nombre</label>
+                <input type="text" class="form-control" required>
+              </div>
 
-          <div class="mb-3">
-            <label class="form-label">Identificación</label>
-            <input type="text" class="form-control" value="1-1234-5678">
-          </div>
+              <div class="col-md-4">
+                <label class="form-label">Segundo Nombre</label>
+                <input type="text" class="form-control">
+              </div>
 
-          <div class="mb-3">
-            <label class="form-label">Teléfono</label>
-            <input type="text" class="form-control" value="8888-0000">
-          </div>
+              <div class="col-md-4">
+                <label class="form-label">Primer Apellido</label>
+                <input type="text" class="form-control" required>
+              </div>
 
-          <button type="submit" class="btn btn-warning w-100">
-            Actualizar
-          </button>
-        </form>
+              <div class="col-md-4">
+                <label class="form-label">Segundo Apellido</label>
+                <input type="text" class="form-control">
+              </div>
 
-      </div>
-    </div>
-  </div>
-</div>
+              <div class="col-md-4">
+                <label class="form-label">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" required>
+              </div>
 
+              <div class="col-md-4">
+                <label class="form-label">Sexo</label>
+                <select class="form-select" required>
+                  <option value="">Seleccione</option>
+                  <option value="F">Femenino</option>
+                  <option value="M">Masculino</option>
+                </select>
+              </div>
 
+              <div class="col-md-8">
+                <label class="form-label">Observaciones</label>
+                <textarea class="form-control" rows="2"></textarea>
+              </div>
 
+              <div class="col-md-4">
+                <label class="form-label">Teléfono</label>
+                <input type="text" class="form-control">
+              </div>
 
-<div class="modal fade" id="modalAgregar" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Agregar Paciente</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
+              <div class="col-md-8">
+                <label class="form-label">Dirección</label>
+                <input type="text" class="form-control">
+              </div>
 
-        <form>
-          <div class="mb-3">
-            <label class="form-label">Nombre completo</label>
-            <input type="text" class="form-control" required>
-          </div>
+              <div class="col-md-6">
+                <label class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control">
+              </div>
+            </div>
 
-          <div class="mb-3">
-            <label class="form-label">Identificación</label>
-            <input type="text" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Teléfono</label>
-            <input type="text" class="form-control" required>
-          </div>
-
-          <button type="submit" class="btn btn-primary w-100">
-            Guardar
-          </button>
-        </form>
-
+            <div class="mt-4">
+              <button type="submit" class="btn btn-primary w-100">Guardar</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
+  <!-- MODAL EDITAR -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title text-dark">Editar Paciente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formEditar">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label class="form-label">Cédula</label>
+                <input type="text" class="form-control" value="1-1234-5678">
+              </div>
 
-<div class="modal fade" id="modalEditar" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-warning">
-        <h5 class="modal-title text-dark">Editar Paciente</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
+              <div class="col-md-4">
+                <label class="form-label">Primer Nombre</label>
+                <input type="text" class="form-control" value="Ana">
+              </div>
 
-        <form>
-          <div class="mb-3">
-            <label class="form-label">Nombre completo</label>
-            <input type="text" class="form-control" value="Ana Rodríguez">
-          </div>
+              <div class="col-md-4">
+                <label class="form-label">Segundo Nombre</label>
+                <input type="text" class="form-control" value="María">
+              </div>
 
-          <div class="mb-3">
-            <label class="form-label">Identificación</label>
-            <input type="text" class="form-control" value="1-1234-5678">
-          </div>
+              <div class="col-md-4">
+                <label class="form-label">Primer Apellido</label>
+                <input type="text" class="form-control" value="Rodríguez">
+              </div>
 
-          <div class="mb-3">
-            <label class="form-label">Teléfono</label>
-            <input type="text" class="form-control" value="8888-0000">
-          </div>
+              <div class="col-md-4">
+                <label class="form-label">Segundo Apellido</label>
+                <input type="text" class="form-control" value="Gómez">
+              </div>
 
-          <button type="submit" class="btn btn-warning w-100">
-            Actualizar
-          </button>
-        </form>
+              <div class="col-md-4">
+                <label class="form-label">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" value="1995-07-12">
+              </div>
 
+              <div class="col-md-4">
+                <label class="form-label">Sexo</label>
+                <select class="form-select">
+                  <option value="">Seleccione</option>
+                  <option value="F" selected>Femenino</option>
+                  <option value="M">Masculino</option>
+                </select>
+              </div>
+
+              <div class="col-md-8">
+                <label class="form-label">Observaciones</label>
+                <textarea class="form-control" rows="2">Control anual</textarea>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Teléfono</label>
+                <input type="text" class="form-control" value="8888-0000">
+              </div>
+
+              <div class="col-md-8">
+                <label class="form-label">Dirección</label>
+                <input type="text" class="form-control" value="San José, Costa Rica">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" value="ana.rodriguez@example.com">
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <button type="submit" class="btn btn-warning w-100">Actualizar</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
 
 
 
