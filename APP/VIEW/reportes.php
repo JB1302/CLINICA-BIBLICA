@@ -1,3 +1,22 @@
+<?php
+require_once __DIR__ . '/../CONTROLLER/DashboardController.php';
+
+$ctrl = new DashboardController();
+
+/* Tablas */
+$data = $ctrl->getTablas();
+$res_citas_estado       = $data['citas_por_estado']      ?? [];
+$res_atenciones_medico  = $data['atenciones_por_medico'] ?? [];
+$res_pacientes_mes      = $data['pacientes_nuevos_mes']  ?? [];
+
+/* KPIs */
+$kpis = $ctrl->getKpis();
+$kpi_pacientes  = $kpis['pacientes']  ?? 0;
+$kpi_citas      = $kpis['citas']      ?? 0;
+$kpi_atenciones = $kpis['atenciones'] ?? 0;
+?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -56,192 +75,149 @@
       </div>
     </div>
   </nav>
+  <main class="container py-5">
+    <!-- KPIs -->
+    <div class="row g-4 mb-4">
 
-
-
-
-<main class="container py-5">
-
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-primary"><i class="fa-solid fa-chart-line me-2"></i>Reportes</h2>
-  </div>
-
-  <!-- FILTROS -->
-  <form class="row g-2 mb-4" method="get" action="/reportes.php">
-    <div class="col-md-3">
-      <label class="form-label small mb-1">Fecha desde</label>
-      <input type="date" class="form-control" name="desde" value="">
-    </div>
-    <div class="col-md-3">
-      <label class="form-label small mb-1">Fecha hasta</label>
-      <input type="date" class="form-control" name="hasta" value="">
-    </div>
-    <div class="col-md-3">
-      <label class="form-label small mb-1">Estado de cita</label>
-      <select class="form-select" name="estado">
-        <option value="">Todos</option>
-        <option>Pendiente</option>
-        <option>Confirmada</option>
-        <option>Atendida</option>
-        <option>Cancelada</option>
-        <option>No asistió</option>
-      </select>
-    </div>
-    <div class="col-md-3 d-grid align-self-end">
-      <button class="btn btn-secondary"><i class="fa-solid fa-filter me-1"></i> Aplicar</button>
-    </div>
-  </form>
-
-  <!-- KPIs -->
-  <div class="row g-3 mb-4">
-    <div class="col-12 col-md-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <p class="text-muted mb-1 small">Pacientes activos</p>
-              <h3 class="mb-0 fw-bold"><?= htmlspecialchars($kpi_pacientes ?? '—') ?></h3>
+      <!-- Pacientes -->
+      <div class="col-12 col-md-4">
+        <div class="card shadow-sm border">
+          <div class="card-body text-center">
+            <div class="d-flex justify-content-center mb-2">
+              <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                <i class="fa-solid fa-users text-primary fs-4"></i>
+              </div>
             </div>
-            <i class="fa-solid fa-users fa-2x text-primary"></i>
+            <h6 class="text-muted mb-1">Pacientes activos</h6>
+            <h2 class="fw-bold mb-0"><?= number_format($kpi_pacientes) ?></h2>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="col-12 col-md-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <p class="text-muted mb-1 small">Citas en rango</p>
-              <h3 class="mb-0 fw-bold"><?= htmlspecialchars($kpi_citas ?? '—') ?></h3>
+      <!-- Citas -->
+      <div class="col-12 col-md-4">
+        <div class="card shadow-sm border">
+          <div class="card-body text-center">
+            <div class="d-flex justify-content-center mb-2">
+              <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                <i class="fa-solid fa-calendar-check text-primary fs-4"></i>
+              </div>
             </div>
-            <i class="fa-solid fa-calendar-check fa-2x text-primary"></i>
+            <h6 class="text-muted mb-1">Citas en rango</h6>
+            <h2 class="fw-bold mb-0"><?= number_format($kpi_citas) ?></h2>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="col-12 col-md-4">
-      <div class="card shadow-sm h-100">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <p class="text-muted mb-1 small">Atenciones registradas</p>
-              <h3 class="mb-0 fw-bold"><?= htmlspecialchars($kpi_atenciones ?? '—') ?></h3>
+      <!-- Atenciones -->
+      <div class="col-12 col-md-4">
+        <div class="card shadow-sm border">
+          <div class="card-body text-center">
+            <div class="d-flex justify-content-center mb-2">
+              <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                <i class="fa-solid fa-stethoscope text-primary fs-4"></i>
+              </div>
             </div>
-            <i class="fa-solid fa-stethoscope fa-2x text-primary"></i>
+            <h6 class="text-muted mb-1">Atenciones registradas</h6>
+            <h2 class="fw-bold mb-0"><?= number_format($kpi_atenciones) ?></h2>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- TABLAS DE RESUMEN -->
-  <div class="row g-4">
-    <!-- Citas por estado -->
-    <div class="col-12 col-lg-6">
-      <div class="card shadow-sm h-100">
-        <div class="card-header bg-light">
-          <strong>Citas por estado</strong> <?= isset($filtro_titulo) ? htmlspecialchars($filtro_titulo) : '' ?>
-        </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0 align-middle">
-              <thead class="table-primary">
-                <tr>
-                  <th>Estado</th>
-                  <th class="text-end">Cantidad</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if (!empty($res_citas_estado)): ?>
-                  <?php foreach ($res_citas_estado as $r): ?>
+    </div>
+
+    <!-- TABLAS -->
+    <div class="row g-4">
+
+      <!-- Citas por estado -->
+      <div class="col-12 col-lg-6">
+        <h6 class="text-muted fw-semibold mb-2">Citas por estado</h6>
+        <div class="table-responsive shadow-sm table-wrap">
+          <table class="table table-hover align-middle">
+            <thead class="table-primary">
+              <tr>
+                <th>Estado</th>
+                <th class="text-end">Cantidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php if (!empty($res_citas_estado)): ?>
+                <?php foreach ($res_citas_estado as $r): ?>
                   <tr>
                     <td><?= htmlspecialchars($r['estado']) ?></td>
-                    <td class="text-end"><?= htmlspecialchars($r['cantidad']) ?></td>
+                    <td class="text-end"><?= number_format((int)$r['cantidad']) ?></td>
                   </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
-                  <tr><td colspan="2" class="text-center text-muted py-3">Sin datos</td></tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
-          </div>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <tr>
+                  <td colspan="2" class="text-center text-muted">Sin datos</td>
+                </tr>
+              <?php endif; ?>
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
 
-    <!-- Atenciones por médico -->
-    <div class="col-12 col-lg-6">
-      <div class="card shadow-sm h-100">
-        <div class="card-header bg-light">
-          <strong>Atenciones por médico</strong>
-        </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0 align-middle">
-              <thead class="table-primary">
-                <tr>
-                  <th>Médico</th>
-                  <th class="text-end">Atenciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if (!empty($res_atenciones_medico)): ?>
-                  <?php foreach ($res_atenciones_medico as $r): ?>
+      <!-- Atenciones por médico -->
+      <div class="col-12 col-lg-6">
+        <h6 class="text-muted fw-semibold mb-2">Atenciones por médico</h6>
+        <div class="table-responsive shadow-sm table-wrap">
+          <table class="table table-hover align-middle">
+            <thead class="table-primary">
+              <tr>
+                <th>Médico</th>
+                <th class="text-end">Atenciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php if (!empty($res_atenciones_medico)): ?>
+                <?php foreach ($res_atenciones_medico as $r): ?>
                   <tr>
                     <td><?= htmlspecialchars($r['medico']) ?></td>
-                    <td class="text-end"><?= htmlspecialchars($r['atenciones']) ?></td>
+                    <td class="text-end"><?= number_format((int)$r['atenciones']) ?></td>
                   </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
-                  <tr><td colspan="2" class="text-center text-muted py-3">Sin datos</td></tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
-          </div>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <tr>
+                  <td colspan="2" class="text-center text-muted">Sin datos</td>
+                </tr>
+              <?php endif; ?>
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
 
-    <!-- Pacientes nuevos por mes -->
-    <div class="col-12">
-      <div class="card shadow-sm">
-        <div class="card-header bg-light">
-          <strong>Pacientes nuevos por mes</strong>
-        </div>
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0 align-middle">
-              <thead class="table-primary">
-                <tr>
-                  <th>Mes</th>
-                  <th class="text-end">Nuevos</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php if (!empty($res_pacientes_mes)): ?>
-                  <?php foreach ($res_pacientes_mes as $r): ?>
+      <!-- Pacientes nuevos por mes -->
+      <div class="col-12">
+        <h6 class="text-muted fw-semibold mb-2">Pacientes nuevos por mes</h6>
+        <div class="table-responsive shadow-sm table-wrap">
+          <table class="table table-hover align-middle">
+            <thead class="table-primary">
+              <tr>
+                <th>Mes</th>
+                <th class="text-end">Nuevos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php if (!empty($res_pacientes_mes)): ?>
+                <?php foreach ($res_pacientes_mes as $r): ?>
                   <tr>
                     <td><?= htmlspecialchars($r['mes']) ?></td>
-                    <td class="text-end"><?= htmlspecialchars($r['nuevos']) ?></td>
+                    <td class="text-end"><?= number_format((int)$r['nuevos']) ?></td>
                   </tr>
-                  <?php endforeach; ?>
-                <?php else: ?>
-                  <tr><td colspan="2" class="text-center text-muted py-3">Sin datos</td></tr>
-                <?php endif; ?>
-              </tbody>
-            </table>
-          </div>
+                <?php endforeach; ?>
+              <?php else: ?>
+                <tr>
+                  <td colspan="2" class="text-center text-muted">Sin datos</td>
+                </tr>
+              <?php endif; ?>
+            </tbody>
+          </table>
         </div>
       </div>
+
     </div>
-
-  </div>
-
-</main>
-
+  </main>
 
 
 

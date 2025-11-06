@@ -1,3 +1,10 @@
+<?php
+require_once __DIR__ . '/../CONTROLLER/CitaController.php';
+
+$controller = new CitaController();
+$pacientes = $controller->listarCitas();
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -59,257 +66,299 @@
 
 
 
+  <main class="container py-5 px-4">
 
-<main class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="fw-bold text-primary"><i class="fa-solid fa-calendar-check me-2"></i>Citas</h2>
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold text-primary"><i class="fa-solid fa-calendar-check me-2"></i>Citas</h2>
-
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
-      <i class="fa-solid fa-plus me-1"></i> Nueva cita
-    </button>
-  </div>
-
-  <!-- FILTROS -->
-  <form class="row g-2 mb-4">
-    <div class="col-md-3">
-      <label class="form-label small mb-1">Estado</label>
-      <select class="form-select" name="estado">
-        <option value="">Todos</option>
-        <option>Pendiente</option>
-        <option>Confirmada</option>
-        <option>Atendida</option>
-        <option>Cancelada</option>
-        <option>No asistió</option>
-      </select>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevaCita">
+        <i class="fa-solid fa-plus me-1"></i> Nueva cita
+      </button>
     </div>
-    <div class="col-md-3">
-      <label class="form-label small mb-1">Fecha desde</label>
-      <input type="date" class="form-control" name="desde">
+
+    <!-- FILTROS -->
+    <form class="row g-2 mb-4">
+      <div class="col-md-3">
+        <label class="form-label small mb-1">Estado</label>
+        <select class="form-select" name="estado">
+          <option value="">Todos</option>
+          <option>Pendiente</option>
+          <option>Confirmada</option>
+          <option>Atendida</option>
+          <option>Cancelada</option>
+          <option>No asistió</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small mb-1">Fecha desde</label>
+        <input type="date" class="form-control" name="desde">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small mb-1">Fecha hasta</label>
+        <input type="date" class="form-control" name="hasta">
+      </div>
+      <div class="col-md-3 d-grid align-self-end">
+        <button class="btn btn-secondary"><i class="fa-solid fa-filter me-1"></i> Aplicar filtros</button>
+      </div>
+    </form>
+
+    <div class="table-responsive shadow-sm">
+      <table class="table table-hover align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>ID Cita</th>
+            <th>Fecha</th>
+            <th>Hora Inicio</th>
+            <th>Hora Fin</th>
+
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Especialidad</th>
+
+            <th>Consultorio</th>
+            <th>Clínica</th>
+
+            <th>Estado</th>
+            <th>Motivo Cancelación</th>
+
+            <th>Turno</th>
+            <th>Observaciones</th>
+
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <?php if (!empty($pacientes)): ?>
+            <?php foreach ($pacientes as $p): ?>
+              <tr>
+                <td><?= htmlspecialchars($p['ID_CITA'] ?? '') ?></td>
+                <td><?= htmlspecialchars($p['FECHA'] ?? '') ?></td>
+                <td><?= htmlspecialchars($p['HORA_INICIO'] ?? '') ?></td>
+                <td><?= htmlspecialchars($p['HORA_FIN'] ?? '') ?></td>
+
+                <td><?= htmlspecialchars($p['PACIENTE'] ?? '') ?></td>
+                <td><?= htmlspecialchars($p['NOMBRE_MEDICO'] ?? '') ?></td>
+                <td><?= htmlspecialchars($p['ESPECIALIDAD'] ?? '') ?></td>
+
+                <td><?= htmlspecialchars($p['CONSULTORIO'] ?? '') ?></td>
+                <td><?= htmlspecialchars($p['CLINICA'] ?? '') ?></td>
+
+                <td><?= htmlspecialchars($p['ESTADO_CITA'] ?? '') ?></td>
+                <td><?= htmlspecialchars($p['MOTIVO_CANCELACION'] ?? '') ?></td>
+
+                <td><?= htmlspecialchars($p['TURNO_INICIO'] ?? '') ?> - <?= htmlspecialchars($p['TURNO_FIN'] ?? '') ?></td>
+
+                <td><?= htmlspecialchars($p['OBSERVACIONES'] ?? '') ?></td>
+
+                <td class="text-center">
+                  <button class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" data-bs-target="#modalEditar">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <tr>
+              <td colspan="14" class="text-center text-muted">No hay citas registradas</td>
+            </tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+
     </div>
-    <div class="col-md-3">
-      <label class="form-label small mb-1">Fecha hasta</label>
-      <input type="date" class="form-control" name="hasta">
-    </div>
-    <div class="col-md-3 d-grid align-self-end">
-      <button class="btn btn-secondary"><i class="fa-solid fa-filter me-1"></i> Aplicar filtros</button>
-    </div>
-  </form>
+  </main>
 
-  <div class="table-responsive shadow-sm">
-    <table class="table table-hover align-middle">
-      <thead class="table-primary">
-        <tr>
-          <th>ID</th>
-          <th>Paciente</th>
-          <th>Médico</th>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Estado</th>
-          <th class="text-center">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>101</td>
-          <td data-paciente-id="1">Ana Rodríguez</td>
-          <td data-medico-id="7">Dr. Quesada</td>
-          <td>2025-11-05</td>
-          <td>09:30</td>
-          <td>
-            <span class="badge bg-warning text-dark">Pendiente</span>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-warning me-1 btn-editar"
-              data-id="101"
-              data-paciente="1"
-              data-medico="7"
-              data-fecha="2025-11-05"
-              data-hora="09:30"
-              data-estado="Pendiente"
-              data-bs-toggle="modal" data-bs-target="#modalEditarCita">
-              <i class="fa-solid fa-pen"></i>
-            </button>
-            <button class="btn btn-sm btn-danger btn-cancelar"
-              data-id="101"
-              data-bs-toggle="modal" data-bs-target="#modalCancelarCita">
-              <i class="fa-solid fa-ban"></i>
-            </button>
-          </td>
-        </tr>
-
-        <tr>
-          <td>102</td>
-          <td data-paciente-id="2">Luis Pérez</td>
-          <td data-medico-id="3">Dra. Solano</td>
-          <td>2025-11-06</td>
-          <td>14:00</td>
-          <td>
-            <span class="badge bg-success">Confirmada</span>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-warning me-1 btn-editar"
-              data-id="102"
-              data-paciente="2"
-              data-medico="3"
-              data-fecha="2025-11-06"
-              data-hora="14:00"
-              data-estado="Confirmada"
-              data-bs-toggle="modal" data-bs-target="#modalEditarCita">
-              <i class="fa-solid fa-pen"></i>
-            </button>
-            <button class="btn btn-sm btn-danger btn-cancelar"
-              data-id="102"
-              data-bs-toggle="modal" data-bs-target="#modalCancelarCita">
-              <i class="fa-solid fa-ban"></i>
-            </button>
-          </td>
-        </tr>
-
-      </tbody>
-    </table>
-  </div>
-</main>
-
+<!-- MODAL: NUEVA CITA -->
 <div class="modal fade" id="modalNuevaCita" tabindex="-1" aria-labelledby="lblNuevaCita" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="lblNuevaCita"><i class="fa-solid fa-plus me-2"></i>Nueva cita</h5>
+        <h5 class="modal-title" id="lblNuevaCita">
+          <i class="fa-solid fa-plus me-2"></i>Nueva cita
+        </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
-        <form id="formNuevaCita">
+        <form id="formNuevaCita" method="post" action="/APP/CONTROLLER/CitaController.php">
+          <input type="hidden" name="action" value="crear">
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Paciente</label>
-              <select class="form-select" name="paciente" required>
+              <select class="form-select" name="ID_PACIENTE" required>
                 <option value="">Selecciona...</option>
-                <option value="1">Ana Rodríguez</option>
-                <option value="2">Luis Pérez</option>
+                <!-- Opciones desde PHP -->
               </select>
             </div>
+
             <div class="col-md-6">
               <label class="form-label">Médico</label>
-              <select class="form-select" name="medico" required>
+              <select class="form-select" name="ID_MEDICO" required>
                 <option value="">Selecciona...</option>
-                <option value="7">Dr. Quesada</option>
-                <option value="3">Dra. Solano</option>
+                <!-- Opciones desde PHP -->
               </select>
             </div>
 
             <div class="col-md-4">
               <label class="form-label">Fecha</label>
-              <input type="date" class="form-control" name="fecha" required>
+              <input type="date" class="form-control" name="FECHA" required>
             </div>
+
             <div class="col-md-4">
-              <label class="form-label">Hora</label>
-              <input type="time" class="form-control" name="hora" required>
+              <label class="form-label">Hora inicio</label>
+              <input type="time" class="form-control" name="HORA_INICIO" required>
             </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Hora fin</label>
+              <input type="time" class="form-control" name="HORA_FIN" required>
+            </div>
+
             <div class="col-md-4">
               <label class="form-label">Estado</label>
-              <select class="form-select" name="estado" required>
-                <option>Pendiente</option>
-                <option>Confirmada</option>
-                <option>Atendida</option>
-                <option>Cancelada</option>
-                <option>No asistió</option>
+              <select class="form-select" name="ESTADO_CITA" required>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Confirmada">Confirmada</option>
+                <option value="Atendida">Atendida</option>
+                <option value="Cancelada">Cancelada</option>
+                <option value="No asistió">No asistió</option>
               </select>
             </div>
 
-            <div class="col-12 d-none" id="wrapMotivoNuevo">
+            <div class="col-md-8">
               <label class="form-label">Motivo de cancelación</label>
-              <textarea class="form-control" name="motivo" rows="2" placeholder="Motivo..." ></textarea>
+              <textarea class="form-control" name="MOTIVO_CANCELACION" rows="2" placeholder="Solo si aplica"></textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Observaciones</label>
+              <textarea class="form-control" name="OBSERVACIONES" rows="2"></textarea>
             </div>
           </div>
 
-          <div class="mt-4">
-            <button type="submit" class="btn btn-primary w-100">Guardar cita</button>
+          <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-fill">Guardar cita</button>
+            <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Cerrar</button>
           </div>
         </form>
       </div>
+
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="modalEditarCita" tabindex="-1" aria-labelledby="lblEditarCita" aria-hidden="true">
+<!-- MODAL: EDITAR CITA -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="lblEditarCita" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header bg-warning">
-        <h5 class="modal-title text-dark" id="lblEditarCita"><i class="fa-solid fa-pen me-2"></i>Editar cita</h5>
+        <h5 class="modal-title text-dark" id="lblEditarCita">
+          <i class="fa-solid fa-pen me-2"></i>Editar cita
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
-        <form id="formEditarCita">
-          <input type="hidden" name="id" id="editId">
+        <form id="formEditarCita" method="post" action="/APP/CONTROLLER/CitaController.php">
+          <input type="hidden" name="action" value="actualizar">
+          <input type="hidden" name="ID_CITA" value="">
+
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Paciente</label>
-              <select class="form-select" name="paciente" id="editPaciente" required>
-                <option value="1">Ana Rodríguez</option>
-                <option value="2">Luis Pérez</option>
+              <select class="form-select" name="ID_PACIENTE" required>
+                <!-- Opciones desde PHP -->
               </select>
             </div>
+
             <div class="col-md-6">
               <label class="form-label">Médico</label>
-              <select class="form-select" name="medico" id="editMedico" required>
-                <option value="7">Dr. Quesada</option>
-                <option value="3">Dra. Solano</option>
+              <select class="form-select" name="ID_MEDICO" required>
+                <!-- Opciones desde PHP -->
               </select>
             </div>
 
             <div class="col-md-4">
               <label class="form-label">Fecha</label>
-              <input type="date" class="form-control" name="fecha" id="editFecha" required>
+              <input type="date" class="form-control" name="FECHA" required>
             </div>
+
             <div class="col-md-4">
-              <label class="form-label">Hora</label>
-              <input type="time" class="form-control" name="hora" id="editHora" required>
+              <label class="form-label">Hora inicio</label>
+              <input type="time" class="form-control" name="HORA_INICIO" required>
             </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Hora fin</label>
+              <input type="time" class="form-control" name="HORA_FIN" required>
+            </div>
+
             <div class="col-md-4">
               <label class="form-label">Estado</label>
-              <select class="form-select" name="estado" id="editEstado" required>
-                <option>Pendiente</option>
-                <option>Confirmada</option>
-                <option>Atendida</option>
-                <option>Cancelada</option>
-                <option>No asistió</option>
+              <select class="form-select" name="ESTADO_CITA" required>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Confirmada">Confirmada</option>
+                <option value="Atendida">Atendida</option>
+                <option value="Cancelada">Cancelada</option>
+                <option value="No asistió">No asistió</option>
               </select>
             </div>
 
-            <div class="col-12 d-none" id="wrapMotivoEditar">
+            <div class="col-md-8">
               <label class="form-label">Motivo de cancelación</label>
-              <textarea class="form-control" name="motivo" id="editMotivo" rows="2" placeholder="Motivo..."></textarea>
+              <textarea class="form-control" name="MOTIVO_CANCELACION" rows="2" placeholder="Solo si aplica"></textarea>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Observaciones</label>
+              <textarea class="form-control" name="OBSERVACIONES" rows="2"></textarea>
             </div>
           </div>
 
-          <div class="mt-4">
-            <button type="submit" class="btn btn-warning w-100">Actualizar cita</button>
+          <div class="mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-warning flex-fill">Actualizar cita</button>
+            <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Cerrar</button>
           </div>
         </form>
       </div>
+
     </div>
   </div>
 </div>
 
+<!-- MODAL: CANCELAR CITA -->
 <div class="modal fade" id="modalCancelarCita" tabindex="-1" aria-labelledby="lblCancelarCita" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="lblCancelarCita"><i class="fa-solid fa-ban me-2"></i>Cancelar cita</h5>
+        <h5 class="modal-title" id="lblCancelarCita">
+          <i class="fa-solid fa-ban me-2"></i>Cancelar cita
+        </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
-        <form id="formCancelarCita">
-          <input type="hidden" name="id" id="cancelId">
-          <p class="mb-3">Confirma la cancelación de la cita <strong id="cancelTextoId">#</strong>. Indica el motivo:</p>
+        <form id="formCancelarCita" method="post" action="/APP/CONTROLLER/CitaController.php">
+          <input type="hidden" name="action" value="cancelar">
+          <input type="hidden" name="ID_CITA" value="">
+
+          <p class="mb-3">Confirmá la cancelación de la cita <strong>#</strong>.</p>
           <div class="mb-3">
             <label class="form-label">Motivo de cancelación</label>
-            <textarea class="form-control" name="motivo" id="cancelMotivo" rows="3" placeholder="Motivo..." required></textarea>
+            <textarea class="form-control" name="MOTIVO_CANCELACION" rows="3" required></textarea>
           </div>
-          <button type="submit" class="btn btn-danger w-100">Cancelar cita</button>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-danger flex-fill">Cancelar cita</button>
+            <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Cerrar</button>
+          </div>
         </form>
       </div>
+
     </div>
   </div>
 </div>
