@@ -78,20 +78,6 @@ $pacientes = $controller->listarPacientes();
       </button>
     </div>
 
-    <form class="row g-2 mb-4">
-      <div class="col-md-4">
-        <input type="text" class="form-control" placeholder="Buscar por nombre o ID">
-      </div>
-      <div class="col-md-3">
-        <input type="text" class="form-control" placeholder="Identificación">
-      </div>
-      <div class="col-md-3">
-        <input type="text" class="form-control" placeholder="Teléfono">
-      </div>
-      <div class="col-md-2 d-grid">
-        <button class="btn btn-secondary" type="button"><i class="fa-solid fa-filter me-1"></i> Filtrar</button>
-      </div>
-    </form>
 
     <!-- TABLA -->
     <div class="table-responsive shadow-sm">

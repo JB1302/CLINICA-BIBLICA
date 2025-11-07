@@ -1,49 +1,196 @@
-body {
-  background-color: #ffffff;
-  color: #050a30;
-  font-family: Arial, Helvetica, sans-serif;
+/* ===========================
+   HERO
+   =========================== */
+
+.hero-section {
+  position: relative;
+  isolation: isolate;
+  min-height: 72vh;
+  display: grid;
+  place-items: center;
+  padding: 5rem 0 4rem;
+  background:
+    linear-gradient(180deg, #4a86b2 0%, #2f6d98 45%, #1f4e6f 100%);
+  color: #ffffff;
 }
 
-.navbar .nav-link {
-  color: #fff;
+/* textura sutil sobre el degradado */
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1px),
+    radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 18px 18px, 24px 24px;
+  background-position: 0 0, 12px 12px;
+  opacity: .65;
+  pointer-events: none;
+  z-index: -1;
 }
 
-.navbar .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-  padding: 4px 8px;
+/* brillo suave en la base para separar del siguiente bloque */
+.hero-section::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -2rem;
+  width: min(92%, 1120px);
+  height: 40px;
+  filter: blur(22px);
+  background: rgba(28, 62, 88, 0.55);
+  border-radius: 100px;
+  z-index: -1;
 }
 
+/* textos */
+.hero-section .text-hero {
+  color: #eaf6ff;
+  max-width: 58ch;
+  margin-inline: auto;
+  line-height: 1.6;
+}
+
+.goals-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 1rem 1rem 0.5rem;
+  color: #ffffff;
+}
+
+/* cabecera y chip */
+.goals-head {
+  display: flex;
+  justify-content: center;
+  margin-bottom: .5rem;
+}
+
+.goals-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .35rem .75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  font-weight: 600;
+  font-size: .9rem;
+}
+
+/* lista de objetivos */
+.goals-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem .75rem;
+  margin: 1rem 0 1rem;
+  padding: 0 .5rem 0 .5rem;
+}
+
+.goals-item {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .65rem .75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
+  font-weight: 600;
+}
+
+.goals-item:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.goals-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+}
+
+.goals-icon i {
+  font-size: 1rem;
+  color: #0d1f2b;
+}
+
+/* ===========================
+   TARJETAS DE MÓDULOS
+   =========================== */
+
+.module-card {
+  border: 1px solid #e7eef6;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  border-radius: 14px;
+}
+
+.module-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(20, 53, 83, 0.15);
+  border-color: #d5e6f4;
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width: 991.98px) {
+  .hero-section {
+    min-height: 60vh;
+    padding: 4rem 0 3rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .goals-list {
+    grid-template-columns: 1fr; /* una columna en móvil */
+  }
+  .hero-section .display-5 {
+    font-size: calc(1.5rem + 2vw);
+  }
+}
+
+/* accesibilidad: si el usuario prefiere menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .goals-item,
+  .module-card {
+    transition: none;
+  }
+}
+
+
+/* FOOTER */
 footer {
-  background-color: #758CA4;
+  background-color: #1f4e6f; /* mismo azul del hero base */
+  color: #ffffff;
 }
 
 footer a {
-  color: #f5f5f5;
+  color: #eaf6ff;
   text-decoration: none;
 }
 
 footer a:hover {
-  opacity: 0.75;
-  transition: opacity .2s;
+  opacity: 0.8;
 }
 
-main {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
+footer hr {
+  border-color: rgba(255,255,255,.35);
+  opacity: .5;
 }
 
-.table-wrap {
-  border-radius: 10px;
-  overflow: hidden;
+footer .form-control {
+  background-color: rgba(0,0,0,.35) !important;
+  color: #fff !important;
+  border-color: rgba(255,255,255,.5) !important;
 }
-
-.table thead.table-primary th {
-  border-bottom: 0;
-}
-
-.table-hover tbody tr:hover {
-  background: #f6fbff;
-}
-

@@ -76,31 +76,7 @@ $pacientes = $controller->listarCitas();
       </button>
     </div>
 
-    <!-- FILTROS -->
-    <form class="row g-2 mb-4">
-      <div class="col-md-3">
-        <label class="form-label small mb-1">Estado</label>
-        <select class="form-select" name="estado">
-          <option value="">Todos</option>
-          <option>Pendiente</option>
-          <option>Confirmada</option>
-          <option>Atendida</option>
-          <option>Cancelada</option>
-          <option>No asistió</option>
-        </select>
-      </div>
-      <div class="col-md-3">
-        <label class="form-label small mb-1">Fecha desde</label>
-        <input type="date" class="form-control" name="desde">
-      </div>
-      <div class="col-md-3">
-        <label class="form-label small mb-1">Fecha hasta</label>
-        <input type="date" class="form-control" name="hasta">
-      </div>
-      <div class="col-md-3 d-grid align-self-end">
-        <button class="btn btn-secondary"><i class="fa-solid fa-filter me-1"></i> Aplicar filtros</button>
-      </div>
-    </form>
+
 
     <div class="table-responsive shadow-sm">
       <table class="table table-hover align-middle">

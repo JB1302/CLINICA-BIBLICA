@@ -75,27 +75,6 @@ $pacientes = $controller->listarMedicos();
       </button>
     </div>
 
-    <!-- BÚSQUEDA -->
-    <form class="row g-2 mb-4" method="get" action="/medicos.php">
-      <div class="col-md-4">
-        <input type="text" name="q" class="form-control" placeholder="Buscar por nombre o colegiado" value="">
-      </div>
-      <div class="col-md-3">
-        <input type="text" name="colegiado" class="form-control" placeholder="N° colegiado" value="">
-      </div>
-      <div class="col-md-3">
-        <select name="especialidad" class="form-select">
-          <option value="">Todas las especialidades</option>
-          <!-- Rellenar con PHP desde ESPECIALIDAD -->
-          <option value="1">Medicina General</option>
-          <option value="2">Pediatría</option>
-          <option value="3">Cardiología</option>
-        </select>
-      </div>
-      <div class="col-md-2 d-grid">
-        <button class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass me-1"></i> Buscar</button>
-      </div>
-    </form>
 
     <div class="table-responsive shadow-sm">
       <table class="table table-hover align-middle">
