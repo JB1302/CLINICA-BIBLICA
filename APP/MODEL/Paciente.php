@@ -12,7 +12,7 @@ class Paciente {
     $sql = "SELECT ID_PACIENTE, CEDULA, PRIMER_NOMBRE, SEGUNDO_NOMBRE,
                    PRIMER_APELLIDO, SEGUNDO_APELLIDO, FECHA_NACIMIENTO,
                    SEXO, OBSERVACIONES, TELEFONO, DIRECCION, CORREO_ELECTRONICO
-            FROM JBARRANTES40180.PACIENTE
+            FROM PACIENTE
             ORDER BY ID_PACIENTE";
 
     $stmt = oci_parse($this->conn, $sql);

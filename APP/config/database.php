@@ -4,8 +4,8 @@ class Database {
 
   public static function get() {
     if (!self::$conn) {
-      $username = 'JBARRANTES40180';
-      $password = '123';
+      $username = 'CLINICA';
+      $password = '1234';
       $connectionString = '//host.docker.internal:1521/XEPDB1';
 
       $conn = oci_connect($username, $password, $connectionString, 'AL32UTF8');
