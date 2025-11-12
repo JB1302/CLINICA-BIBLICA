@@ -1,3 +1,8 @@
+<?php
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -22,7 +27,6 @@
 <body class="d-flex flex-column min-vh-100">
 
 
-
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#4986b2;">
     <div class="container">
       <a class="navbar-brand fw-bold d-flex align-items-center" href="/home.php">
@@ -37,55 +41,49 @@
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link active" href="/home.php">Inicio |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/pacientes.php">Pacientes |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/expediente.php">Expedientes |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/citas.php">Citas |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/medicos.php">Médicos |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/personal.php">Personal |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/reportes.php">Reportes</a></li>
-
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="fa-solid fa-user-circle fs-5"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/login.php">Iniciar sesión</a></li>
-              <li><a class="dropdown-item" href="/register.php">Registrarse</a></li>
-            </ul>
-          </li>
-
         </ul>
       </div>
+
+
     </div>
   </nav>
 
 
 
+  <main class="container py-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h3 class="fw-bold text-primary mb-3">
+          <i class="fa-solid fa-file-medical me-2"></i>Vista de Expedientes
+        </h3>
 
-<main class="container py-5 d-flex align-items-center justify-content-center flex-fill">
-    <div class="col-12 col-md-6 col-lg-4">
-      <div class="card shadow-sm">
-        <div class="card-body p-4">
-          <h1 class="h5 fw-bold text-center mb-3">Recuperar contraseña</h1>
-          <p class="small text-muted text-center mb-4">
-            Ingresa tu correo para enviarte un enlace de recuperación.
-          </p>
-          <form method="post" action="/forgot.php?action=send_reset">
-            <div class="mb-3">
-              <label class="form-label">Correo</label>
-              <input type="email" name="correo" class="form-control" required>
-            </div>
-            <button class="btn btn-primary w-100" type="submit">Enviar enlace</button>
-          </form>
+        <p class="text-muted mb-4">
+          En esta vista se muestra el <strong>expediente clínico completo</strong> de los pacientes, integrando la información proveniente de los módulos de <strong>doctor</strong> y <strong>atención</strong>.
+        </p>
 
-          <hr class="my-4">
-          <div class="d-flex justify-content-between">
-            <a href="/login.php" class="small">Volver a iniciar sesión</a>
-            <a href="/register.php" class="small">Crear cuenta</a>
-          </div>
-        </div>
+        <ul class="list-group list-group-flush mb-3">
+          <li class="list-group-item">
+            <strong>Join:</strong> une los datos del expediente con la información del doctor tratante y los registros de atención médica.
+          </li>
+          <li class="list-group-item">
+            <strong>Editar:</strong> permite actualizar la información del expediente o agregar nuevas observaciones médicas.
+          </li>
+          <li class="list-group-item">
+            <strong>Estado:</strong> indica si el expediente está <span class="text-success fw-semibold">Activo</span> o <span class="text-danger fw-semibold">Cerrado</span>.
+          </li>
+        </ul>
+
+        <p class="text-muted small mb-0">
+          *Esta vista permite la consulta integral del historial médico del paciente, vinculando diagnósticos, tratamientos y médicos responsables.
+        </p>
       </div>
     </div>
   </main>
-
 
 
 

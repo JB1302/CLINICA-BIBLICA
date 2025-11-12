@@ -10,4 +10,13 @@ class MedicoController {
       return [];
     }
   }
+
+  public function listarEspecialidades(): array {
+    try {
+      return (new Medico())->obtenerEspecialidades();
+    } catch (Throwable $e) {
+      error_log('MedicoController (especialidades): ' . $e->getMessage());
+      return [];
+    }
+  }
 }

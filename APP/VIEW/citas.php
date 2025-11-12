@@ -44,25 +44,18 @@ $pacientes = $controller->listarCitas();
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link active" href="/home.php">Inicio |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/pacientes.php">Pacientes |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/expediente.php">Expedientes |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/citas.php">Citas |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/medicos.php">Médicos |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/personal.php">Personal |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/reportes.php">Reportes</a></li>
-
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="fa-solid fa-user-circle fs-5"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/login.php">Iniciar sesión</a></li>
-              <li><a class="dropdown-item" href="/register.php">Registrarse</a></li>
-            </ul>
-          </li>
-
         </ul>
       </div>
+
+
     </div>
   </nav>
+
 
 
 
@@ -131,8 +124,13 @@ $pacientes = $controller->listarCitas();
                   <button class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" data-bs-target="#modalEditar">
                     <i class="fa-solid fa-pen"></i>
                   </button>
-                  <button class="btn btn-sm btn-danger">
-                    <i class="fa-solid fa-trash"></i>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalCancelarCita"
+                    data-id="<?= htmlspecialchars($p['ID_CITA'] ?? '') ?>"
+                    data-nombre="<?= htmlspecialchars($p['PACIENTE'] ?? '') ?>">
+                    <i class="fa-solid fa-ban"></i>
                   </button>
                 </td>
               </tr>
@@ -148,196 +146,180 @@ $pacientes = $controller->listarCitas();
     </div>
   </main>
 
-<!-- MODAL: NUEVA CITA -->
-<div class="modal fade" id="modalNuevaCita" tabindex="-1" aria-labelledby="lblNuevaCita" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="lblNuevaCita">
-          <i class="fa-solid fa-plus me-2"></i>Nueva cita
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+  <!-- MODAL: NUEVA CITA -->
+  <div class="modal fade" id="modalNuevaCita" tabindex="-1" aria-labelledby="lblNuevaCita" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="lblNuevaCita">
+            <i class="fa-solid fa-plus me-2"></i>Nueva cita
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="formNuevaCita" method="post" action="/APP/CONTROLLER/CitaController.php">
+            <input type="hidden" name="action" value="crear">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Paciente</label>
+                <select class="form-select" name="ID_PACIENTE" required>
+                  <option value="">Selecciona...</option>
+                  <!-- Opciones desde PHP -->
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Médico</label>
+                <select class="form-select" name="ID_MEDICO" required>
+                  <option value="">Selecciona...</option>
+                  <!-- Opciones desde PHP -->
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Fecha</label>
+                <input type="date" class="form-control" name="FECHA" required>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Hora inicio</label>
+                <input type="time" class="form-control" name="HORA_INICIO" required>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Hora fin</label>
+                <input type="time" class="form-control" name="HORA_FIN" required>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Observaciones</label>
+                <textarea class="form-control" name="OBSERVACIONES" rows="2"></textarea>
+              </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+              <button type="submit" class="btn btn-primary flex-fill">Guardar cita</button>
+              <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+          </form>
+        </div>
+
       </div>
+    </div>
+  </div>
 
-      <div class="modal-body">
-        <form id="formNuevaCita" method="post" action="/APP/CONTROLLER/CitaController.php">
-          <input type="hidden" name="action" value="crear">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Paciente</label>
-              <select class="form-select" name="ID_PACIENTE" required>
-                <option value="">Selecciona...</option>
-                <!-- Opciones desde PHP -->
-              </select>
+  <!-- MODAL: EDITAR CITA -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="lblEditarCita" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title text-dark" id="lblEditarCita">
+            <i class="fa-solid fa-pen me-2"></i>Editar cita
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="formEditarCita" method="post" action="/APP/CONTROLLER/CitaController.php">
+            <input type="hidden" name="action" value="actualizar">
+            <input type="hidden" name="ID_CITA" value="">
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Paciente</label>
+                <select class="form-select" name="ID_PACIENTE" required>
+                  <!-- Opciones desde PHP -->
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Médico</label>
+                <select class="form-select" name="ID_MEDICO" required>
+                  <!-- Opciones desde PHP -->
+                </select>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Fecha</label>
+                <input type="date" class="form-control" name="FECHA" required>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Hora inicio</label>
+                <input type="time" class="form-control" name="HORA_INICIO" required>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Hora fin</label>
+                <input type="time" class="form-control" name="HORA_FIN" required>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label">Estado</label>
+                <select class="form-select" name="ESTADO_CITA" required>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Confirmada">Confirmada</option>
+                  <option value="Atendida">Atendida</option>
+                  <option value="Cancelada">Cancelada</option>
+                  <option value="No asistió">No asistió</option>
+                </select>
+              </div>
+
+              <div class="col-md-8">
+                <label class="form-label">Motivo de cancelación</label>
+                <textarea class="form-control" name="MOTIVO_CANCELACION" rows="2" placeholder="Solo si aplica"></textarea>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Observaciones</label>
+                <textarea class="form-control" name="OBSERVACIONES" rows="2"></textarea>
+              </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Médico</label>
-              <select class="form-select" name="ID_MEDICO" required>
-                <option value="">Selecciona...</option>
-                <!-- Opciones desde PHP -->
-              </select>
+            <div class="mt-4 d-flex gap-2">
+              <button type="submit" class="btn btn-warning flex-fill">Actualizar cita</button>
+              <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Cerrar</button>
             </div>
+          </form>
+        </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Fecha</label>
-              <input type="date" class="form-control" name="FECHA" required>
-            </div>
+      </div>
+    </div>
+  </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Hora inicio</label>
-              <input type="time" class="form-control" name="HORA_INICIO" required>
-            </div>
+  <!-- MODAL: CANCELAR CITA -->
+  <div class="modal fade" id="modalCancelarCita" tabindex="-1" aria-labelledby="lblCancelarCita" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="lblCancelarCita">
+            <i class="fa-solid fa-ban me-2"></i>Cancelar cita
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Hora fin</label>
-              <input type="time" class="form-control" name="HORA_FIN" required>
-            </div>
+        <div class="modal-body">
+          <form id="formCancelarCita" method="post" action="/APP/CONTROLLER/CitaController.php">
+            <input type="hidden" name="action" value="cancelar">
+            <input type="hidden" name="ID_CITA" value="">
 
-            <div class="col-md-4">
-              <label class="form-label">Estado</label>
-              <select class="form-select" name="ESTADO_CITA" required>
-                <option value="Pendiente">Pendiente</option>
-                <option value="Confirmada">Confirmada</option>
-                <option value="Atendida">Atendida</option>
-                <option value="Cancelada">Cancelada</option>
-                <option value="No asistió">No asistió</option>
-              </select>
-            </div>
-
-            <div class="col-md-8">
+            <p class="mb-3">Confirmá la cancelación de la cita <strong>#</strong>.</p>
+            <div class="mb-3">
               <label class="form-label">Motivo de cancelación</label>
-              <textarea class="form-control" name="MOTIVO_CANCELACION" rows="2" placeholder="Solo si aplica"></textarea>
+              <textarea class="form-control" name="MOTIVO_CANCELACION" rows="3" required></textarea>
             </div>
 
-            <div class="col-12">
-              <label class="form-label">Observaciones</label>
-              <textarea class="form-control" name="OBSERVACIONES" rows="2"></textarea>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-danger flex-fill">Cancelar cita</button>
+              <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Cerrar</button>
             </div>
-          </div>
+          </form>
+        </div>
 
-          <div class="mt-4 d-flex gap-2">
-            <button type="submit" class="btn btn-primary flex-fill">Guardar cita</button>
-            <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Cerrar</button>
-          </div>
-        </form>
       </div>
-
     </div>
   </div>
-</div>
-
-<!-- MODAL: EDITAR CITA -->
-<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="lblEditarCita" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header bg-warning">
-        <h5 class="modal-title text-dark" id="lblEditarCita">
-          <i class="fa-solid fa-pen me-2"></i>Editar cita
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body">
-        <form id="formEditarCita" method="post" action="/APP/CONTROLLER/CitaController.php">
-          <input type="hidden" name="action" value="actualizar">
-          <input type="hidden" name="ID_CITA" value="">
-
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Paciente</label>
-              <select class="form-select" name="ID_PACIENTE" required>
-                <!-- Opciones desde PHP -->
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Médico</label>
-              <select class="form-select" name="ID_MEDICO" required>
-                <!-- Opciones desde PHP -->
-              </select>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Fecha</label>
-              <input type="date" class="form-control" name="FECHA" required>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Hora inicio</label>
-              <input type="time" class="form-control" name="HORA_INICIO" required>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Hora fin</label>
-              <input type="time" class="form-control" name="HORA_FIN" required>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Estado</label>
-              <select class="form-select" name="ESTADO_CITA" required>
-                <option value="Pendiente">Pendiente</option>
-                <option value="Confirmada">Confirmada</option>
-                <option value="Atendida">Atendida</option>
-                <option value="Cancelada">Cancelada</option>
-                <option value="No asistió">No asistió</option>
-              </select>
-            </div>
-
-            <div class="col-md-8">
-              <label class="form-label">Motivo de cancelación</label>
-              <textarea class="form-control" name="MOTIVO_CANCELACION" rows="2" placeholder="Solo si aplica"></textarea>
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Observaciones</label>
-              <textarea class="form-control" name="OBSERVACIONES" rows="2"></textarea>
-            </div>
-          </div>
-
-          <div class="mt-4 d-flex gap-2">
-            <button type="submit" class="btn btn-warning flex-fill">Actualizar cita</button>
-            <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Cerrar</button>
-          </div>
-        </form>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: CANCELAR CITA -->
-<div class="modal fade" id="modalCancelarCita" tabindex="-1" aria-labelledby="lblCancelarCita" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="lblCancelarCita">
-          <i class="fa-solid fa-ban me-2"></i>Cancelar cita
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body">
-        <form id="formCancelarCita" method="post" action="/APP/CONTROLLER/CitaController.php">
-          <input type="hidden" name="action" value="cancelar">
-          <input type="hidden" name="ID_CITA" value="">
-
-          <p class="mb-3">Confirmá la cancelación de la cita <strong>#</strong>.</p>
-          <div class="mb-3">
-            <label class="form-label">Motivo de cancelación</label>
-            <textarea class="form-control" name="MOTIVO_CANCELACION" rows="3" required></textarea>
-          </div>
-
-          <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-danger flex-fill">Cancelar cita</button>
-            <button type="button" class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">Cerrar</button>
-          </div>
-        </form>
-      </div>
-
-    </div>
-  </div>
-</div>
 
 
 

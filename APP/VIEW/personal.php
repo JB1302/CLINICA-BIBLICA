@@ -1,3 +1,8 @@
+<?php
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -22,7 +27,6 @@
 <body class="d-flex flex-column min-vh-100">
 
 
-
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#4986b2;">
     <div class="container">
       <a class="navbar-brand fw-bold d-flex align-items-center" href="/home.php">
@@ -37,62 +41,49 @@
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link active" href="/home.php">Inicio |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/pacientes.php">Pacientes |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/expediente.php">Expedientes |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/citas.php">Citas |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/medicos.php">Médicos |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/personal.php">Personal |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/reportes.php">Reportes</a></li>
-
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="fa-solid fa-user-circle fs-5"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/login.php">Iniciar sesión</a></li>
-              <li><a class="dropdown-item" href="/register.php">Registrarse</a></li>
-            </ul>
-          </li>
-
         </ul>
       </div>
+
+
     </div>
   </nav>
 
 
 
+  <main class="container py-5">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h3 class="fw-bold text-primary mb-3">
+          <i class="fa-solid fa-users-gear me-2"></i>Vista de Personal
+        </h3>
 
-<main class="container py-5 d-flex align-items-center justify-content-center flex-fill">
-    <div class="col-12 col-md-6 col-lg-4">
-      <div class="card shadow-sm">
-        <div class="card-body p-4">
-          <h1 class="h4 fw-bold text-center mb-3">Iniciar sesión</h1>
-          <form method="post" action="/login.php?action=login">
-            <div class="mb-3">
-              <label class="form-label">Usuario o correo</label>
-              <input type="text" name="usuario" class="form-control" required>
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Contraseña</label>
-              <input type="password" name="password" class="form-control" required>
-            </div>
+        <p class="text-muted mb-4">
+          En esta vista se muestra la <strong>tabla completa del personal</strong> registrada en el sistema.
+        </p>
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                <label class="form-check-label" for="remember">Recordarme</label>
-              </div>
-              <a href="/forgot.php" class="small">¿Olvidaste tu contraseña?</a>
-            </div>
+        <ul class="list-group list-group-flush mb-3">
+          <li class="list-group-item">
+            <strong>Join:</strong> permite visualizar la información relacionada del personal con otras tablas (por ejemplo, roles o departamentos).
+          </li>
+          <li class="list-group-item">
+            <strong>Editar:</strong> opción disponible para modificar los datos de cada empleado.
+          </li>
+          <li class="list-group-item">
+            <strong>Vigente:</strong> indica si el personal se encuentra <span class="text-success fw-semibold">Activo</span> o <span class="text-danger fw-semibold">No activo</span>.
+          </li>
+        </ul>
 
-            <button class="btn btn-primary w-100" type="submit">Entrar</button>
-          </form>
-
-          <hr class="my-4">
-          <p class="text-center small mb-0">¿No tienes cuenta?
-            <a href="/register.php">Regístrate</a>
-          </p>
-        </div>
+        <p class="text-muted small mb-0">
+          *Esta vista está destinada al control y administración del personal médico y administrativo de la clínica.
+        </p>
       </div>
     </div>
+
   </main>
 
 

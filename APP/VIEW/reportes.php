@@ -41,7 +41,6 @@ $kpi_atenciones = $kpis['atenciones'] ?? 0;
 <body class="d-flex flex-column min-vh-100">
 
 
-
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#4986b2;">
     <div class="container">
       <a class="navbar-brand fw-bold d-flex align-items-center" href="/home.php">
@@ -56,25 +55,19 @@ $kpi_atenciones = $kpis['atenciones'] ?? 0;
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link active" href="/home.php">Inicio |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/pacientes.php">Pacientes |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/expediente.php">Expedientes |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/citas.php">Citas |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/medicos.php">Médicos |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/personal.php">Personal |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/reportes.php">Reportes</a></li>
-
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="fa-solid fa-user-circle fs-5"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/login.php">Iniciar sesión</a></li>
-              <li><a class="dropdown-item" href="/register.php">Registrarse</a></li>
-            </ul>
-          </li>
-
         </ul>
       </div>
+
+
     </div>
   </nav>
+
+  
   <main class="container py-5">
     <!-- KPIs -->
     <div class="row g-4 mb-4">

@@ -27,38 +27,32 @@ $pacientes = $controller->listarPacientes();
 
     <body class="d-flex flex-column min-vh-100">
 
-        <!-- NAVBAR -->
-        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#4986b2;">
-            <div class="container">
-                <a class="navbar-brand fw-bold d-flex align-items-center" href="/home.php">
-                    ⚕️ Clinica Biblica
-                </a>
+         <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#4986b2;">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center" href="/home.php">
+        ⚕️ Clinica Biblica
+      </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link active" href="/home.php">Inicio |</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="/pacientes.php">Pacientes |</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="/citas.php">Citas |</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="/medicos.php">Médicos |</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="/reportes.php">Reportes</a></li>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="/home.php">Inicio |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/pacientes.php">Pacientes |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/expediente.php">Expedientes |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/citas.php">Citas |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/medicos.php">Médicos |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/personal.php">Personal |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/reportes.php">Reportes</a></li>
+        </ul>
+      </div>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fa-solid fa-user-circle fs-5"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="/login.php">Iniciar sesión</a></li>
-                                <li><a class="dropdown-item" href="/register.php">Registrarse</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+
+    </div>
+  </nav>
+
 
         <!-- MAIN -->
         <main class="container-xxl py-5 px-4">

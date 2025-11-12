@@ -3,6 +3,8 @@ require_once __DIR__ . '/../CONTROLLER/MedicoController.php';
 
 $controller = new MedicoController();
 $pacientes = $controller->listarMedicos();
+$especialidades = $controller->listarEspecialidades();
+
 ?>
 
 <!DOCTYPE html>
@@ -29,7 +31,6 @@ $pacientes = $controller->listarMedicos();
 <body class="d-flex flex-column min-vh-100">
 
 
-
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#4986b2;">
     <div class="container">
       <a class="navbar-brand fw-bold d-flex align-items-center" href="/home.php">
@@ -44,23 +45,15 @@ $pacientes = $controller->listarMedicos();
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link active" href="/home.php">Inicio |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/pacientes.php">Pacientes |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/expediente.php">Expedientes |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/citas.php">Citas |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/medicos.php">Médicos |</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/personal.php">Personal |</a></li>
           <li class="nav-item"><a class="nav-link active" href="/reportes.php">Reportes</a></li>
-
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-              <i class="fa-solid fa-user-circle fs-5"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="/login.php">Iniciar sesión</a></li>
-              <li><a class="dropdown-item" href="/register.php">Registrarse</a></li>
-            </ul>
-          </li>
-
         </ul>
       </div>
+
+
     </div>
   </nav>
 
@@ -117,120 +110,117 @@ $pacientes = $controller->listarMedicos();
 
   </main>
 
-<!-- MODAL: CREAR MÉDICO -->
-<div class="modal fade" id="modalCrearMedico" tabindex="-1" aria-labelledby="lblCrearMedico" aria-hidden="true">
-  <div class="modal-dialog">
-    <form class="modal-content" method="post" action="/medicos.php?action=create">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title" id="lblCrearMedico">
-          <i class="fa-solid fa-user-plus me-2"></i>Nuevo médico
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body">
-
-        <div class="mb-3">
-          <label class="form-label">Nombre completo</label>
-          <input type="text" name="nombre" class="form-control" required>
+  <!-- MODAL: CREAR MÉDICO -->
+  <div class="modal fade" id="modalCrearMedico" tabindex="-1" aria-labelledby="lblCrearMedico" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" method="post" action="/medicos.php?action=create">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="lblCrearMedico">
+            <i class="fa-solid fa-user-plus me-2"></i>Nuevo médico
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">N° Colegiado</label>
-          <input type="text" name="colegiado" class="form-control" required>
+        <div class="modal-body">
+
+          <div class="mb-3">
+            <label class="form-label">ID Personal</label>
+            <input type="number" name="nombre" class="form-control" required>
+          </div>
+
+
+          <div class="mb-3">
+            <label class="form-label">Especialidad</label>
+            <select name="especialidad_id" class="form-select" required>
+              <option value="">Selecciona...</option>
+              <?php foreach ($especialidades as $esp): ?>
+                <option value="<?= htmlspecialchars($esp['ID_ESPECIALIDAD']) ?>">
+                  <?= htmlspecialchars($esp['NOMBRE']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Especialidad</label>
-          <select name="especialidad_id" class="form-select" required>
-            <option value="">Selecciona...</option>
-            <option value="1">Medicina General</option>
-            <option value="2">Pediatría</option>
-            <option value="3">Cardiología</option>
-          </select>
+        <div class="modal-footer">
+          <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cerrar</button>
+          <button class="btn btn-primary" type="submit">Guardar</button>
         </div>
-
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cerrar</button>
-        <button class="btn btn-primary" type="submit">Guardar</button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 
 
-<!-- MODAL: EDITAR MÉDICO -->
-<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="lblEditar" aria-hidden="true">
-  <div class="modal-dialog">
-    <form class="modal-content" method="post" action="/medicos.php?action=update">
+  <!-- MODAL: EDITAR MÉDICO -->
+  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="lblEditar" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" method="post" action="/medicos.php?action=update">
 
-      <div class="modal-header bg-warning">
-        <h5 class="modal-title text-dark" id="lblEditar">
-          <i class="fa-solid fa-pen me-2"></i>Editar médico
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body">
-        <input type="hidden" name="id" value="">
-
-        <div class="mb-3">
-          <label class="form-label">Nombre completo</label>
-          <input type="text" name="nombre" class="form-control" required>
+        <div class="modal-header bg-warning">
+          <h5 class="modal-title text-dark" id="lblEditar">
+            <i class="fa-solid fa-pen me-2"></i>Editar médico
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">N° Colegiado</label>
-          <input type="text" name="colegiado" class="form-control" required>
+        <div class="modal-body">
+          <input type="hidden" name="id" value="">
+
+          <div class="mb-3">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" name="nombre" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">N° Colegiado</label>
+            <input type="text" name="colegiado" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Especialidad</label>
+            <select name="especialidad_id" class="form-select" required>
+              <option value="1">Medicina General</option>
+              <option value="2">Pediatría</option>
+              <option value="3">Cardiología</option>
+            </select>
+          </div>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">Especialidad</label>
-          <select name="especialidad_id" class="form-select" required>
-            <option value="1">Medicina General</option>
-            <option value="2">Pediatría</option>
-            <option value="3">Cardiología</option>
-          </select>
+        <div class="modal-footer">
+          <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cerrar</button>
+          <button class="btn btn-warning" type="submit">Actualizar</button>
         </div>
-      </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cerrar</button>
-        <button class="btn btn-warning" type="submit">Actualizar</button>
-      </div>
-
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 
 
-<!-- MODAL: ELIMINAR MÉDICO -->
-<div class="modal fade" id="modalEliminarMedico" tabindex="-1" aria-labelledby="lblEliminarMedico" aria-hidden="true">
-  <div class="modal-dialog">
-    <form class="modal-content" method="post" action="/medicos.php?action=delete">
+  <!-- MODAL: ELIMINAR MÉDICO -->
+  <div class="modal fade" id="modalEliminarMedico" tabindex="-1" aria-labelledby="lblEliminarMedico" aria-hidden="true">
+    <div class="modal-dialog">
+      <form class="modal-content" method="post" action="/medicos.php?action=delete">
 
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="lblEliminarMedico">
-          <i class="fa-solid fa-trash me-2"></i>Eliminar médico
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="lblEliminarMedico">
+            <i class="fa-solid fa-trash me-2"></i>Eliminar médico
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
 
-      <div class="modal-body">
-        <input type="hidden" name="id" value="">
-        <p class="mb-0">¿Seguro que deseas eliminar este registro?</p>
-      </div>
+        <div class="modal-body">
+          <input type="hidden" name="id" value="">
+          <p class="mb-0">¿Seguro que deseas eliminar este registro?</p>
+        </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cancelar</button>
-        <button class="btn btn-danger" type="submit">Eliminar</button>
-      </div>
+        <div class="modal-footer">
+          <button class="btn btn-light" data-bs-dismiss="modal" type="button">Cancelar</button>
+          <button class="btn btn-danger" type="submit">Eliminar</button>
+        </div>
 
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 
 
 

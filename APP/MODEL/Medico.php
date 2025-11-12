@@ -34,4 +34,21 @@ ORDER BY nombre_medico, e.nombre";
     oci_free_statement($stmt);
     return $rows;
   }
+
+public function obtenerEspecialidades(): array
+  {
+    $sql = "SELECT ID_ESPECIALIDAD, NOMBRE
+            FROM ESPECIALIDAD
+            ORDER BY NOMBRE ASC";
+
+    $stmt = oci_parse($this->conn, $sql);
+    oci_execute($stmt);
+
+    $rows = [];
+    while ($r = oci_fetch_assoc($stmt)) $rows[] = $r;
+
+    oci_free_statement($stmt);
+    return $rows;
+  }
+
 }
