@@ -57,6 +57,26 @@ $pacientes = $controller->listarPacientes();
     <!-- MAIN -->
     <main class="container-xxl py-5 px-4">
 
+        <?php if (isset($_GET['success'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?php
+                switch($_GET['success']) {
+                    case '1': echo 'Paciente creado exitosamente'; break;
+                    case '2': echo 'Paciente actualizado exitosamente'; break;
+                    case '3': echo 'Paciente eliminado exitosamente'; break;
+                }
+                ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['error'])): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Error al procesar la solicitud. Intente nuevamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold text-primary"><i class="fa-solid fa-user me-2"></i>Pacientes</h2>
 
@@ -119,7 +139,10 @@ $pacientes = $controller->listarPacientes();
                                         data-correo="<?= htmlspecialchars($p['CORREO_ELECTRONICO'] ?? '') ?>">
                                         <i class="fa-solid fa-pen"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-danger">
+                                    <button class="btn btn-sm btn-danger btn-eliminar"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEliminar"
+                                        data-id="<?= htmlspecialchars($p['ID_PACIENTE'] ?? '') ?>">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </td>
@@ -139,7 +162,7 @@ $pacientes = $controller->listarPacientes();
     <div class="modal fade" id="modalAgregar" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
-                <form method="post" action="app/controllers/PacienteController.php" autocomplete="off">
+                <form method="post" action="/pacientes.php" autocomplete="off">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalAgregarLabel">Nuevo Paciente</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -224,48 +247,50 @@ $pacientes = $controller->listarPacientes();
     <div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
+                <form method="post" action="/pacientes.php" autocomplete="off">
+                    <input type="hidden" name="action" value="update">
+                    <input type="hidden" name="ID_PACIENTE" id="editIdPaciente">
 
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title text-dark">Editar Paciente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title text-dark">Editar Paciente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
 
-                <div class="modal-body">
-                    <form id="formEditar">
+                    <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label class="form-label">Cédula</label>
-                                <input type="text" class="form-control" id="editCedula">
+                                <input type="text" class="form-control" name="CEDULA" id="editCedula" required>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Primer Nombre</label>
-                                <input type="text" class="form-control" id="editPrimerNombre">
+                                <input type="text" class="form-control" name="PRIMER_NOMBRE" id="editPrimerNombre" required>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Segundo Nombre</label>
-                                <input type="text" class="form-control" id="editSegundoNombre">
+                                <input type="text" class="form-control" name="SEGUNDO_NOMBRE" id="editSegundoNombre">
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Primer Apellido</label>
-                                <input type="text" class="form-control" id="editPrimerApellido">
+                                <input type="text" class="form-control" name="PRIMER_APELLIDO" id="editPrimerApellido" required>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Segundo Apellido</label>
-                                <input type="text" class="form-control" id="editSegundoApellido">
+                                <input type="text" class="form-control" name="SEGUNDO_APELLIDO" id="editSegundoApellido">
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Fecha de Nacimiento</label>
-                                <input type="date" class="form-control" id="editFechaNacimiento">
+                                <input type="date" class="form-control" name="FECHA_NACIMIENTO" id="editFechaNacimiento" required>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Sexo</label>
-                                <select class="form-select" id="editSexo">
+                                <select class="form-select" name="SEXO" id="editSexo" required>
                                     <option value="">Seleccione</option>
                                     <option value="F">Femenino</option>
                                     <option value="M">Masculino</option>
@@ -274,31 +299,58 @@ $pacientes = $controller->listarPacientes();
 
                             <div class="col-md-8">
                                 <label class="form-label">Observaciones</label>
-                                <textarea class="form-control" rows="2" id="editObservaciones"></textarea>
+                                <textarea class="form-control" rows="2" name="OBSERVACIONES" id="editObservaciones"></textarea>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">Teléfono</label>
-                                <input type="text" class="form-control" id="editTelefono">
+                                <input type="text" class="form-control" name="TELEFONO" id="editTelefono">
                             </div>
 
                             <div class="col-md-8">
                                 <label class="form-label">Dirección</label>
-                                <input type="text" class="form-control" id="editDireccion">
+                                <input type="text" class="form-control" name="DIRECCION" id="editDireccion">
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Correo Electrónico</label>
-                                <input type="email" class="form-control" id="editCorreo">
+                                <input type="email" class="form-control" name="CORREO_ELECTRONICO" id="editCorreo">
                             </div>
                         </div>
+                    </div>
 
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-warning w-100">Actualizar</button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
+    <!-- MODAL ELIMINAR -->
+    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" action="/pacientes.php">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="ID_PACIENTE" id="deleteIdPaciente">
+
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Eliminar Paciente</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>¿Está seguro que desea eliminar este paciente?</p>
+                        <p class="text-muted small mb-0">Esta acción no se puede deshacer.</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -323,6 +375,7 @@ $pacientes = $controller->listarPacientes();
             editarModal.addEventListener('show.bs.modal', event => {
                 const button = event.relatedTarget;
 
+                document.getElementById('editIdPaciente').value = button.getAttribute('data-id') || '';
                 document.getElementById('editCedula').value = button.getAttribute('data-cedula') || '';
                 document.getElementById('editPrimerNombre').value = button.getAttribute('data-pnombre') || '';
                 document.getElementById('editSegundoNombre').value = button.getAttribute('data-snombre') || '';
@@ -334,6 +387,13 @@ $pacientes = $controller->listarPacientes();
                 document.getElementById('editTelefono').value = button.getAttribute('data-telefono') || '';
                 document.getElementById('editDireccion').value = button.getAttribute('data-direccion') || '';
                 document.getElementById('editCorreo').value = button.getAttribute('data-correo') || '';
+            });
+
+            const eliminarModal = document.getElementById('modalEliminar');
+
+            eliminarModal.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+                document.getElementById('deleteIdPaciente').value = button.getAttribute('data-id') || '';
             });
         });
     </script>
