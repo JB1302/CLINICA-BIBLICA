@@ -6,6 +6,9 @@ class Database {
     if (!self::$conn) {
       $username = 'CLINICA';
       $password = '1234';
+      //MAC
+      // $connectionString = '//4.156.223.214:1521/XEPDB1';
+      //WINDOWS
       $connectionString = '//host.docker.internal:1521/XEPDB1';
 
       $conn = oci_connect($username, $password, $connectionString, 'AL32UTF8');

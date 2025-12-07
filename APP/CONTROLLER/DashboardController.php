@@ -29,4 +29,3 @@ class DashboardController {
     }
   }
 }
-//prueba

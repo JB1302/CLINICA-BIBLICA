@@ -6,111 +6,35 @@ class PacienteController {
     try {
       return (new Paciente())->obtenerTodos();
     } catch (Throwable $e) {
-      error_log('PacienteController listar: ' . $e->getMessage());
+      error_log('PacienteController: ' . $e->getMessage());
       return [];
     }
   }
 
-  public function crear(): void {
+  public function crear(array $data): array {
     try {
-      $data = [
-        'CEDULA' => $_POST['CEDULA'] ?? '',
-        'PRIMER_NOMBRE' => $_POST['PRIMER_NOMBRE'] ?? '',
-        'SEGUNDO_NOMBRE' => $_POST['SEGUNDO_NOMBRE'] ?? '',
-        'PRIMER_APELLIDO' => $_POST['PRIMER_APELLIDO'] ?? '',
-        'SEGUNDO_APELLIDO' => $_POST['SEGUNDO_APELLIDO'] ?? '',
-        'FECHA_NACIMIENTO' => $_POST['FECHA_NACIMIENTO'] ?? '',
-        'SEXO' => $_POST['SEXO'] ?? '',
-        'OBSERVACIONES' => $_POST['OBSERVACIONES'] ?? '',
-        'TELEFONO' => $_POST['TELEFONO'] ?? '',
-        'DIRECCION' => $_POST['DIRECCION'] ?? '',
-        'CORREO_ELECTRONICO' => $_POST['CORREO_ELECTRONICO'] ?? ''
-      ];
-
-      $paciente = new Paciente();
-      $resultado = $paciente->crear($data);
-
-      if ($resultado) {
-        header('Location: /pacientes.php?success=1');
-      } else {
-        header('Location: /pacientes.php?error=1');
-      }
-      exit;
+      return (new Paciente())->crear($data);
     } catch (Throwable $e) {
-      error_log('PacienteController crear: ' . $e->getMessage());
-      header('Location: /pacientes.php?error=1');
-      exit;
+      error_log('PacienteController::crear: ' . $e->getMessage());
+      return ['resultado' => 0, 'mensaje' => 'Error interno al crear paciente'];
     }
   }
 
-  public function actualizar(): void {
+  public function actualizar(array $data): array {
     try {
-      $id = (int)($_POST['ID_PACIENTE'] ?? 0);
-      
-      $data = [
-        'CEDULA' => $_POST['CEDULA'] ?? '',
-        'PRIMER_NOMBRE' => $_POST['PRIMER_NOMBRE'] ?? '',
-        'SEGUNDO_NOMBRE' => $_POST['SEGUNDO_NOMBRE'] ?? '',
-        'PRIMER_APELLIDO' => $_POST['PRIMER_APELLIDO'] ?? '',
-        'SEGUNDO_APELLIDO' => $_POST['SEGUNDO_APELLIDO'] ?? '',
-        'FECHA_NACIMIENTO' => $_POST['FECHA_NACIMIENTO'] ?? '',
-        'SEXO' => $_POST['SEXO'] ?? '',
-        'OBSERVACIONES' => $_POST['OBSERVACIONES'] ?? '',
-        'TELEFONO' => $_POST['TELEFONO'] ?? '',
-        'DIRECCION' => $_POST['DIRECCION'] ?? '',
-        'CORREO_ELECTRONICO' => $_POST['CORREO_ELECTRONICO'] ?? ''
-      ];
-
-      $paciente = new Paciente();
-      $resultado = $paciente->actualizar($id, $data);
-
-      if ($resultado) {
-        header('Location: /pacientes.php?success=2');
-      } else {
-        header('Location: /pacientes.php?error=2');
-      }
-      exit;
+      return (new Paciente())->actualizar($data);
     } catch (Throwable $e) {
-      error_log('PacienteController actualizar: ' . $e->getMessage());
-      header('Location: /pacientes.php?error=2');
-      exit;
+      error_log('PacienteController::actualizar: ' . $e->getMessage());
+      return ['resultado' => 0, 'mensaje' => 'Error interno al actualizar paciente'];
     }
   }
 
-  public function eliminar(): void {
+  public function eliminar(int $id): array {
     try {
-      $id = (int)($_POST['ID_PACIENTE'] ?? 0);
-
-      $paciente = new Paciente();
-      $resultado = $paciente->eliminar($id);
-
-      if ($resultado) {
-        header('Location: /pacientes.php?success=3');
-      } else {
-        header('Location: /pacientes.php?error=3');
-      }
-      exit;
+      return (new Paciente())->eliminar($id);
     } catch (Throwable $e) {
-      error_log('PacienteController eliminar: ' . $e->getMessage());
-      header('Location: /pacientes.php?error=3');
-      exit;
+      error_log('PacienteController::eliminar: ' . $e->getMessage());
+      return ['resultado' => 0, 'mensaje' => 'Error interno al eliminar paciente'];
     }
-  }
-}
-
-// Procesar acciones si se envía por POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-  $controller = new PacienteController();
-  
-  switch ($_POST['action']) {
-    case 'create':
-      $controller->crear();
-      break;
-    case 'update':
-      $controller->actualizar();
-      break;
-    case 'delete':
-      $controller->eliminar();
-      break;
   }
 }

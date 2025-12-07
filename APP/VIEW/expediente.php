@@ -1,5 +1,36 @@
 <?php
+require_once '/var/www/CONTROLLER/ExpedienteController.php';
 
+$controller = new ExpedienteController();
+
+// Procesar POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $accion = $_POST['accion'] ?? '';
+    
+    if ($accion === 'crear') {
+        $resultado = $controller->crear();
+        header("Location: expediente.php?msg=" . urlencode($resultado['mensaje']) . "&ok=" . $resultado['ok']);
+        exit;
+    } elseif ($accion === 'actualizar') {
+        $resultado = $controller->actualizar();
+        header("Location: expediente.php?msg=" . urlencode($resultado['mensaje']) . "&ok=" . $resultado['ok']);
+        exit;
+    }
+}
+
+// Procesar AJAX
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'detalle') {
+    header('Content-Type: application/json');
+    echo json_encode($controller->obtenerDetalle());
+    exit;
+}
+
+$expedientes = $controller->obtenerTodos();
+$pacientesSinExpediente = $controller->obtenerPacientesSinExpediente();
+
+// Manejo de mensajes
+$msg = $_GET['msg'] ?? '';
+$ok = $_GET['ok'] ?? '';
 ?>
 
 
@@ -9,7 +40,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚕️ Clinica Biblica</title>
+  <title>⚕️ Clinica Biblica - Expedientes</title>
 
 
   <!-- Bootstrap -->
@@ -56,36 +87,151 @@
 
 
   <main class="container py-5">
-    <div class="card shadow-sm border-0">
+    <?php if (!empty($msg)): ?>
+      <div class="alert alert-<?= $ok == 1 ? 'success' : 'danger' ?> alert-dismissible fade show" role="alert">
+        <?= htmlspecialchars($msg) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    <?php endif; ?>
+
+    <div class="card shadow-sm border-0 mb-4">
       <div class="card-body">
-        <h3 class="fw-bold text-primary mb-3">
-          <i class="fa-solid fa-file-medical me-2"></i>Vista de Expedientes
-        </h3>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="fw-bold text-primary mb-0">
+            <i class="fa-solid fa-file-medical me-2"></i>Gestión de Expedientes
+          </h3>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#nuevoExpedienteModal">
+            <i class="fa-solid fa-plus me-2"></i>Nuevo Expediente
+          </button>
+        </div>
 
-        <p class="text-muted mb-4">
-          En esta vista se muestra el <strong>expediente clínico completo</strong> de los pacientes, integrando la información proveniente de los módulos de <strong>doctor</strong> y <strong>atención</strong>.
-        </p>
-
-        <ul class="list-group list-group-flush mb-3">
-          <li class="list-group-item">
-            <strong>Join:</strong> une los datos del expediente con la información del doctor tratante y los registros de atención médica.
-          </li>
-          <li class="list-group-item">
-            <strong>Editar:</strong> permite actualizar la información del expediente o agregar nuevas observaciones médicas.
-          </li>
-          <li class="list-group-item">
-            <strong>Estado:</strong> indica si el expediente está <span class="text-success fw-semibold">Activo</span> o <span class="text-danger fw-semibold">Cerrado</span>.
-          </li>
-        </ul>
-
-        <p class="text-muted small mb-0">
-          *Esta vista permite la consulta integral del historial médico del paciente, vinculando diagnósticos, tratamientos y médicos responsables.
-        </p>
+        <div class="table-responsive">
+          <table class="table table-hover table-bordered align-middle">
+            <thead class="table-primary">
+              <tr>
+                <th>ID</th>
+                <th>Cédula</th>
+                <th>Paciente</th>
+                <th>Fecha Creación</th>
+                <th>Teléfono</th>
+                <th>Notas</th>
+                <th class="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php if (empty($expedientes)): ?>
+                <tr>
+                  <td colspan="7" class="text-center text-muted">No hay expedientes registrados</td>
+                </tr>
+              <?php else: ?>
+                <?php foreach ($expedientes as $exp): ?>
+                  <tr>
+                    <td><?= htmlspecialchars($exp['ID_EXPEDIENTE']) ?></td>
+                    <td><?= htmlspecialchars($exp['CEDULA']) ?></td>
+                    <td><?= htmlspecialchars($exp['NOMBRE_PACIENTE']) ?></td>
+                    <td><?= htmlspecialchars($exp['FECHA_CREACION']) ?></td>
+                    <td><?= htmlspecialchars($exp['TELEFONO']) ?></td>
+                    <td><?= htmlspecialchars($exp['NOTAS'] ?? 'Sin notas') ?></td>
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-info me-1" onclick="verDetalle(<?= $exp['ID_EXPEDIENTE'] ?>)" title="Ver detalle">
+                        <i class="fa-solid fa-eye"></i>
+                      </button>
+                      <button class="btn btn-sm btn-warning" onclick="editarExpediente(<?= $exp['ID_EXPEDIENTE'] ?>, '<?= htmlspecialchars($exp['NOTAS'] ?? '', ENT_QUOTES) ?>')" title="Editar">
+                        <i class="fa-solid fa-edit"></i>
+                      </button>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </main>
 
+  <!-- Modal Nuevo Expediente -->
+  <div class="modal fade" id="nuevoExpedienteModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Nuevo Expediente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST">
+          <input type="hidden" name="accion" value="crear">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nuevo-paciente" class="form-label">Paciente *</label>
+              <select class="form-select" id="nuevo-paciente" name="id_paciente" required>
+                <option value="">Seleccione un paciente</option>
+                <?php foreach ($pacientesSinExpediente as $pac): ?>
+                  <option value="<?= $pac['ID_PACIENTE'] ?>">
+                    <?= htmlspecialchars($pac['CEDULA']) ?> - <?= htmlspecialchars($pac['NOMBRE_COMPLETO']) ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="nuevo-notas" class="form-label">Notas</label>
+              <textarea class="form-control" id="nuevo-notas" name="notas" rows="3" maxlength="100"></textarea>
+              <small class="text-muted">Máximo 100 caracteres</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Crear Expediente</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
+  <!-- Modal Editar Expediente -->
+  <div class="modal fade" id="editarExpedienteModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Expediente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form method="POST">
+          <input type="hidden" name="accion" value="actualizar">
+          <input type="hidden" id="editar-id" name="id_expediente">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="editar-notas" class="form-label">Notas</label>
+              <textarea class="form-control" id="editar-notas" name="notas" rows="3" maxlength="100"></textarea>
+              <small class="text-muted">Máximo 100 caracteres</small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-warning">Actualizar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detalle Expediente -->
+  <div class="modal fade" id="detalleExpedienteModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalle del Expediente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="detalle-contenido">
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
   <footer class="py-5 mt-auto" style=" color:#fff;">
@@ -125,6 +271,92 @@
 
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function editarExpediente(id, notas) {
+      document.getElementById('editar-id').value = id;
+      document.getElementById('editar-notas').value = notas;
+      new bootstrap.Modal(document.getElementById('editarExpedienteModal')).show();
+    }
+
+    function verDetalle(idExpediente) {
+      const modal = new bootstrap.Modal(document.getElementById('detalleExpedienteModal'));
+      modal.show();
+
+      fetch('expediente.php?ajax=detalle&id=' + idExpediente)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            document.getElementById('detalle-contenido').innerHTML = 
+              `<div class="alert alert-danger">${data.error}</div>`;
+            return;
+          }
+
+          let html = `
+            <div class="card mb-3">
+              <div class="card-header bg-primary text-white">
+                <h6 class="mb-0">Información del Paciente</h6>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <p><strong>Nombre:</strong> ${data.expediente.NOMBRE_PACIENTE}</p>
+                    <p><strong>Cédula:</strong> ${data.expediente.CEDULA}</p>
+                    <p><strong>Sexo:</strong> ${data.expediente.SEXO}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p><strong>Teléfono:</strong> ${data.expediente.TELEFONO}</p>
+                    <p><strong>Email:</strong> ${data.expediente.CORREO_ELECTRONICO}</p>
+                    <p><strong>Fecha Nac.:</strong> ${data.expediente.FECHA_NACIMIENTO}</p>
+                  </div>
+                </div>
+                <p><strong>Dirección:</strong> ${data.expediente.DIRECCION}</p>
+                <p><strong>Notas del Expediente:</strong> ${data.expediente.NOTAS || 'Sin notas'}</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header bg-info text-white">
+                <h6 class="mb-0">Historial de Citas (${data.citas.length})</h6>
+              </div>
+              <div class="card-body">
+                ${data.citas.length === 0 ? '<p class="text-muted">No hay citas registradas</p>' : `
+                  <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                      <thead>
+                        <tr>
+                          <th>Fecha</th>
+                          <th>Hora</th>
+                          <th>Médico</th>
+                          <th>Especialidad</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${data.citas.map(cita => `
+                          <tr>
+                            <td>${cita.FECHA}</td>
+                            <td>${cita.HORA_INICIO} - ${cita.HORA_FIN}</td>
+                            <td>${cita.NOMBRE_MEDICO}</td>
+                            <td>${cita.ESPECIALIDAD || 'N/A'}</td>
+                            <td><span class="badge bg-${cita.ESTADO === 'Programada' ? 'primary' : cita.ESTADO === 'Completada' ? 'success' : 'danger'}">${cita.ESTADO}</span></td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                `}
+              </div>
+            </div>
+          `;
+
+          document.getElementById('detalle-contenido').innerHTML = html;
+        })
+        .catch(error => {
+          document.getElementById('detalle-contenido').innerHTML = 
+            `<div class="alert alert-danger">Error al cargar el detalle</div>`;
+        });
+    }
+  </script>
 </body>
 
 </html>

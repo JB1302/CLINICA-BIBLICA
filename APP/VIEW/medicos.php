@@ -2,8 +2,50 @@
 require_once __DIR__ . '/../CONTROLLER/MedicoController.php';
 
 $controller = new MedicoController();
-$pacientes = $controller->listarMedicos();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_GET['action'] ?? '';
+
+    switch ($action) {
+        case 'create':
+            $res = $controller->crear([
+                'ID_PERSONAL'     => (int)($_POST['ID_PERSONAL']     ?? 0),
+                'ID_ESPECIALIDAD' => (int)($_POST['ID_ESPECIALIDAD'] ?? 0),
+            ]);
+            break;
+
+        case 'update':
+            $res = $controller->actualizar([
+                'ID_MEDICO'       => (int)($_POST['ID_MEDICO']       ?? 0),
+                'NOMBRE'          => $_POST['NOMBRE']                ?? '',
+                'ID_ESPECIALIDAD' => (int)($_POST['ID_ESPECIALIDAD'] ?? 0),
+                'ID_HORARIO'      => !empty($_POST['ID_HORARIO']) ? (int)$_POST['ID_HORARIO'] : null,
+            ]);
+            break;
+
+        case 'delete':
+            $id  = (int)($_POST['ID_MEDICO'] ?? 0);
+            $res = $controller->eliminar($id);
+            break;
+
+        default:
+            $res = ['resultado' => 0, 'mensaje' => 'Acción no válida'];
+            break;
+    }
+
+    header('Location: medicos.php?msg=' . urlencode($res['mensaje'])
+                           . '&ok=' . (int)($res['resultado'] ?? 0));
+    exit;
+}
+
+$medicos = $controller->listarMedicos();
 $especialidades = $controller->listarEspecialidades();
+$personalDisponible = $controller->listarPersonalDisponible();
+
+// Cambio de Adry: Cargar horarios disponibles para edición
+require_once __DIR__ . '/../CONTROLLER/PersonalController.php';
+$personalController = new PersonalController();
+$horarios = $personalController->listarHorarios();
 
 ?>
 
@@ -59,13 +101,25 @@ $especialidades = $controller->listarEspecialidades();
 
 
   <main class="container py-5">
+    <!-- Alerta de confirmacion o error -->
+    <?php if (isset($_GET['msg'])): ?>
+        <div class="alert alert-<?= ($_GET['ok'] ?? '0') == '1' ? 'success' : 'danger' ?> alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_GET['msg']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="fw-bold text-primary"><i class="fa-solid fa-user-doctor me-2"></i>Médicos</h2>
-
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearMedico">
-        <i class="fa-solid fa-plus me-1"></i> Nuevo médico
-      </button>
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="fw-bold text-primary mb-0">
+            <i class="fa-solid fa-user-doctor me-2"></i>Gestión de Médicos
+          </h3>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCrearMedico">
+            <i class="fa-solid fa-plus me-1"></i> Nuevo Médico
+          </button>
+        </div>
+      </div>
     </div>
 
 
@@ -76,24 +130,38 @@ $especialidades = $controller->listarEspecialidades();
             <th>ID</th>
             <th>Nombre</th>
             <th>Especialidad</th>
+            <!-- Cambio de Adry: Columna Consultorios renombrada a Horarios -->
+            <th>Horarios</th>
 
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
 
         <tbody>
-          <?php if (!empty($pacientes)): ?>
-            <?php foreach ($pacientes as $p): ?>
+          <?php if (!empty($medicos)): ?>
+            <?php foreach ($medicos as $m): ?>
               <tr>
-                <td><?= htmlspecialchars($p['ID_MEDICO'] ?? '') ?></td>
-                <td><?= htmlspecialchars($p['NOMBRE_MEDICO'] ?? '') ?></td>
-                <td><?= htmlspecialchars($p['ESPECIALIDAD'] ?? '') ?></td>
+                <td><?= htmlspecialchars($m['ID_MEDICO'] ?? '') ?></td>
+                <td><?= htmlspecialchars($m['NOMBRE_MEDICO'] ?? '') ?></td>
+                <td><?= htmlspecialchars($m['ESPECIALIDAD'] ?? '') ?></td>
+                <!-- Cambio de Adry: Agregada columna de horarios -->
+                <td><?= htmlspecialchars($m['HORARIOS'] ?? 'Sin horarios') ?></td>
 
                 <td class="text-center">
-                  <button class="btn btn-sm btn-warning me-1" data-bs-toggle="modal" data-bs-target="#modalEditar">
+                  <button class="btn btn-sm btn-warning me-1"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalEditar"
+                          data-id="<?= htmlspecialchars($m['ID_MEDICO']) ?>"
+                          data-nombre="<?= htmlspecialchars($m['NOMBRE_MEDICO']) ?>"
+                          data-especialidad-id="<?= htmlspecialchars($m['ID_ESPECIALIDAD']) ?>"
+                          data-id-horario="<?= htmlspecialchars($m['ID_HORARIO'] ?? '') ?>">
                     <i class="fa-solid fa-pen"></i>
                   </button>
-                  <button class="btn btn-sm btn-danger">
+
+                  <button class="btn btn-sm btn-danger"
+                          data-bs-toggle="modal"
+                          data-bs-target="#modalEliminarMedico"
+                          data-id="<?= htmlspecialchars($m['ID_MEDICO']) ?>">
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </td>
@@ -123,15 +191,23 @@ $especialidades = $controller->listarEspecialidades();
 
         <div class="modal-body">
 
+          <!-- PERSONAL DISPONIBLE -->
           <div class="mb-3">
-            <label class="form-label">ID Personal</label>
-            <input type="number" name="nombre" class="form-control" required>
+            <label class="form-label">Personal (Doctor/Doctora)</label>
+            <select class="form-select" id="ID_PERSONAL" name="ID_PERSONAL" required>
+              <option value="">Selecciona...</option>
+              <?php foreach ($personalDisponible as $p): ?>
+                <option value="<?= htmlspecialchars($p['ID_PERSONAL']) ?>">
+                  <?= htmlspecialchars($p['NOMBRE_COMPLETO']) ?> (<?= htmlspecialchars($p['PUESTO']) ?>)
+                </option>
+              <?php endforeach; ?>
+            </select>
           </div>
 
 
           <div class="mb-3">
             <label class="form-label">Especialidad</label>
-            <select name="especialidad_id" class="form-select" required>
+            <select name="ID_ESPECIALIDAD" class="form-select" required>
               <option value="">Selecciona...</option>
               <?php foreach ($especialidades as $esp): ?>
                 <option value="<?= htmlspecialchars($esp['ID_ESPECIALIDAD']) ?>">
@@ -164,24 +240,35 @@ $especialidades = $controller->listarEspecialidades();
         </div>
 
         <div class="modal-body">
-          <input type="hidden" name="id" value="">
+          <input type="hidden" id="editIdMedico" name="ID_MEDICO" value="">
 
           <div class="mb-3">
             <label class="form-label">Nombre completo</label>
-            <input type="text" name="nombre" class="form-control" required>
+            <input type="text" id="editNombre" name="NOMBRE" class="form-control" required>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">N° Colegiado</label>
-            <input type="text" name="colegiado" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
+            <div class="mb-3">
             <label class="form-label">Especialidad</label>
-            <select name="especialidad_id" class="form-select" required>
-              <option value="1">Medicina General</option>
-              <option value="2">Pediatría</option>
-              <option value="3">Cardiología</option>
+            <select id="editEspecialidad" name="ID_ESPECIALIDAD" class="form-select" required>
+              <option value="">Selecciona...</option>
+              <?php foreach ($especialidades as $esp): ?>
+                <option value="<?= htmlspecialchars($esp['ID_ESPECIALIDAD']) ?>">
+                  <?= htmlspecialchars($esp['NOMBRE']) ?>
+                </option>
+              <?php endforeach; ?>
+            </select>
+          </div>
+
+          <!-- Cambio de Adry: Agregar campo para editar horario del médico -->
+          <div class="mb-3">
+            <label class="form-label">Horario de Trabajo</label>
+            <select id="editHorario" name="ID_HORARIO" class="form-select">
+              <option value="">Sin horario asignado</option>
+              <?php foreach ($horarios as $h): ?>
+                <option value="<?= htmlspecialchars($h['ID_HORARIO']) ?>">
+                  <?= htmlspecialchars($h['HORARIO']) ?>
+                </option>
+              <?php endforeach; ?>
             </select>
           </div>
         </div>
@@ -209,7 +296,7 @@ $especialidades = $controller->listarEspecialidades();
         </div>
 
         <div class="modal-body">
-          <input type="hidden" name="id" value="">
+          <input type="hidden" id="deleteIdMedico" name="ID_MEDICO" value="">
           <p class="mb-0">¿Seguro que deseas eliminar este registro?</p>
         </div>
 
@@ -262,6 +349,56 @@ $especialidades = $controller->listarEspecialidades();
 
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- EDITAR (ya lo tienes) ---
+        const editarModal = document.getElementById('modalEditar');
+        if (editarModal) {
+            editarModal.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+                document.getElementById('editIdMedico').value     = button.getAttribute('data-id') || '';
+                document.getElementById('editNombre').value       = button.getAttribute('data-nombre') || '';
+                document.getElementById('editEspecialidad').value = button.getAttribute('data-especialidad-id') || '';
+                // Cambio de Adry: Poblar campo de horario
+                document.getElementById('editHorario').value      = button.getAttribute('data-id-horario') || '';
+            });
+        }
+
+        // --- ELIMINAR ---
+        const eliminarModal = document.getElementById('modalEliminarMedico');
+        if (eliminarModal) {
+            eliminarModal.addEventListener('show.bs.modal', event => {
+                const button = event.relatedTarget;
+                const idMedico = button.getAttribute('data-id') || '';
+
+                const inputDelete = document.getElementById('deleteIdMedico');
+                if (inputDelete) {
+                    inputDelete.value = idMedico;
+                }
+            });
+        }
+    });
+  </script>
+    <!-- Eliminar el mensaje al refrescar -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Si la URL contiene parámetros (msg, ok)
+            if (window.location.search.includes("msg")) {
+
+                // Eliminar los parámetros de la URL sin recargar la página
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        });
+    </script>
+    <!-- Eliminar el mensaje a los 3 segundos -->
+    <script>
+        setTimeout(() => {
+            const alert = document.querySelector('.alert');
+            if (alert) alert.remove();
+        }, 3000);
+    </script>
 </body>
 
 </html>

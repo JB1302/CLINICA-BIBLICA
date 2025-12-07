@@ -9,11 +9,12 @@ class Paciente {
   }
 
   public function obtenerTodos(): array {
+    // Cambio de Adry: Ordenamiento descendente por ID_PACIENTE para mostrar los más recientes primero
     $sql = "SELECT ID_PACIENTE, CEDULA, PRIMER_NOMBRE, SEGUNDO_NOMBRE,
-                   PRIMER_APELLIDO, SEGUNDO_APELLIDO, FECHA_NACIMIENTO,
+                   PRIMER_APELLIDO, SEGUNDO_APELLIDO, TO_CHAR(FECHA_NACIMIENTO, 'YYYY-MM-DD') AS FECHA_NACIMIENTO,
                    SEXO, OBSERVACIONES, TELEFONO, DIRECCION, CORREO_ELECTRONICO
             FROM PACIENTE
-            ORDER BY ID_PACIENTE";
+            ORDER BY ID_PACIENTE DESC";
 
     $stmt = oci_parse($this->conn, $sql);
     oci_execute($stmt);
@@ -25,82 +26,206 @@ class Paciente {
     return $rows;
   }
 
-  public function crear(array $data): bool {
-    $sql = "INSERT INTO PACIENTE (
-              CEDULA, PRIMER_NOMBRE, SEGUNDO_NOMBRE, PRIMER_APELLIDO, 
-              SEGUNDO_APELLIDO, FECHA_NACIMIENTO, SEXO, OBSERVACIONES, 
-              TELEFONO, DIRECCION, CORREO_ELECTRONICO
-            ) VALUES (
-              :cedula, :primer_nombre, :segundo_nombre, :primer_apellido,
-              :segundo_apellido, TO_DATE(:fecha_nacimiento, 'YYYY-MM-DD'), 
-              :sexo, :observaciones, :telefono, :direccion, :correo_electronico
-            )";
+  // INSERT -> pkg_paciente.agregar_paciente
+  public function crear(array $data): array {
+    $sql = "
+      BEGIN
+        pkg_paciente.agregar_paciente(
+          :pin_cedula,
+          :pin_primer_nombre,
+          :pin_segundo_nombre,
+          :pin_primer_apellido,
+          :pin_segundo_apellido,
+          :pin_fecha_nacimiento,
+          :pin_sexo,
+          :pin_observaciones,
+          :pin_telefono,
+          :pin_direccion,
+          :pin_correo_electronico,
+          :pout_resultado,
+          :pout_mensaje
+        );
+      END;
+    ";
 
     $stmt = oci_parse($this->conn, $sql);
-    
-    oci_bind_by_name($stmt, ':cedula', $data['CEDULA']);
-    oci_bind_by_name($stmt, ':primer_nombre', $data['PRIMER_NOMBRE']);
-    oci_bind_by_name($stmt, ':segundo_nombre', $data['SEGUNDO_NOMBRE']);
-    oci_bind_by_name($stmt, ':primer_apellido', $data['PRIMER_APELLIDO']);
-    oci_bind_by_name($stmt, ':segundo_apellido', $data['SEGUNDO_APELLIDO']);
-    oci_bind_by_name($stmt, ':fecha_nacimiento', $data['FECHA_NACIMIENTO']);
-    oci_bind_by_name($stmt, ':sexo', $data['SEXO']);
-    oci_bind_by_name($stmt, ':observaciones', $data['OBSERVACIONES']);
-    oci_bind_by_name($stmt, ':telefono', $data['TELEFONO']);
-    oci_bind_by_name($stmt, ':direccion', $data['DIRECCION']);
-    oci_bind_by_name($stmt, ':correo_electronico', $data['CORREO_ELECTRONICO']);
 
-    $result = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+    // IN
+    oci_bind_by_name($stmt, ':pin_cedula', $data['CEDULA']);
+    oci_bind_by_name($stmt, ':pin_primer_nombre', $data['PRIMER_NOMBRE']);
+    oci_bind_by_name($stmt, ':pin_segundo_nombre', $data['SEGUNDO_NOMBRE']);
+    oci_bind_by_name($stmt, ':pin_primer_apellido', $data['PRIMER_APELLIDO']);
+    oci_bind_by_name($stmt, ':pin_segundo_apellido', $data['SEGUNDO_APELLIDO']);
+    oci_bind_by_name($stmt, ':pin_fecha_nacimiento', $data['FECHA_NACIMIENTO']);
+    oci_bind_by_name($stmt, ':pin_sexo', $data['SEXO']);
+    oci_bind_by_name($stmt, ':pin_observaciones', $data['OBSERVACIONES']);
+    oci_bind_by_name($stmt, ':pin_telefono', $data['TELEFONO']);
+    oci_bind_by_name($stmt, ':pin_direccion', $data['DIRECCION']);
+    oci_bind_by_name($stmt, ':pin_correo_electronico', $data['CORREO_ELECTRONICO']);
+
+    // OUT
+    $resultado = 0;
+    $mensaje   = '';
+
+    oci_bind_by_name($stmt, ':pout_resultado', $resultado, 32);
+    oci_bind_by_name($stmt, ':pout_mensaje',   $mensaje,   4000);
+
+    $ok = @oci_execute($stmt);
+    if (!$ok) {
+        $e = oci_error($stmt);
+        oci_free_statement($stmt);
+        $mensajeOracle = $e['message'] ?? '';
+        $mensajeLimpio = $mensajeOracle;
+
+        // Busca "ORA-200xx: " y se queda con lo que viene después
+        if (preg_match('/ORA-20\d{3}:\s*(.+)$/m', $mensajeOracle, $m)) {
+            $mensajeLimpio = $m[1]; // solo el texto del trigger
+        }
+        return [
+            'resultado' => 0,
+            'mensaje'   => $mensajeLimpio,
+        ];
+    }
+
     oci_free_statement($stmt);
-    
-    return $result;
+
+    return [
+      'resultado' => (int)$resultado,
+      'mensaje' => $mensaje,
+    ];
   }
 
-  public function actualizar(int $id, array $data): bool {
-    $sql = "UPDATE PACIENTE SET
-              CEDULA = :cedula,
-              PRIMER_NOMBRE = :primer_nombre,
-              SEGUNDO_NOMBRE = :segundo_nombre,
-              PRIMER_APELLIDO = :primer_apellido,
-              SEGUNDO_APELLIDO = :segundo_apellido,
-              FECHA_NACIMIENTO = TO_DATE(:fecha_nacimiento, 'YYYY-MM-DD'),
-              SEXO = :sexo,
-              OBSERVACIONES = :observaciones,
-              TELEFONO = :telefono,
-              DIRECCION = :direccion,
-              CORREO_ELECTRONICO = :correo_electronico
-            WHERE ID_PACIENTE = :id";
+  // UPDATE -> pkg_paciente.editar_paciente
+  public function actualizar(array $data): array {
+    $sql = "
+      BEGIN
+        pkg_paciente.editar_paciente(
+          :pin_id,
+          :pin_cedula,
+          :pin_primer_nombre,
+          :pin_segundo_nombre,
+          :pin_primer_apellido,
+          :pin_segundo_apellido,
+          :pin_fecha_nacimiento,
+          :pin_sexo,
+          :pin_observaciones,
+          :pin_telefono,
+          :pin_direccion,
+          :pin_correo_electronico,
+          :pout_resultado,
+          :pout_mensaje
+        );
+      END;
+    ";
 
     $stmt = oci_parse($this->conn, $sql);
-    
-    oci_bind_by_name($stmt, ':id', $id);
-    oci_bind_by_name($stmt, ':cedula', $data['CEDULA']);
-    oci_bind_by_name($stmt, ':primer_nombre', $data['PRIMER_NOMBRE']);
-    oci_bind_by_name($stmt, ':segundo_nombre', $data['SEGUNDO_NOMBRE']);
-    oci_bind_by_name($stmt, ':primer_apellido', $data['PRIMER_APELLIDO']);
-    oci_bind_by_name($stmt, ':segundo_apellido', $data['SEGUNDO_APELLIDO']);
-    oci_bind_by_name($stmt, ':fecha_nacimiento', $data['FECHA_NACIMIENTO']);
-    oci_bind_by_name($stmt, ':sexo', $data['SEXO']);
-    oci_bind_by_name($stmt, ':observaciones', $data['OBSERVACIONES']);
-    oci_bind_by_name($stmt, ':telefono', $data['TELEFONO']);
-    oci_bind_by_name($stmt, ':direccion', $data['DIRECCION']);
-    oci_bind_by_name($stmt, ':correo_electronico', $data['CORREO_ELECTRONICO']);
 
-    $result = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+    // IN
+    oci_bind_by_name($stmt, ':pin_id', $data['ID_PACIENTE']);
+    oci_bind_by_name($stmt, ':pin_cedula', $data['CEDULA']);
+    oci_bind_by_name($stmt, ':pin_primer_nombre', $data['PRIMER_NOMBRE']);
+    oci_bind_by_name($stmt, ':pin_segundo_nombre', $data['SEGUNDO_NOMBRE']);
+    oci_bind_by_name($stmt, ':pin_primer_apellido', $data['PRIMER_APELLIDO']);
+    oci_bind_by_name($stmt, ':pin_segundo_apellido', $data['SEGUNDO_APELLIDO']);
+    oci_bind_by_name($stmt, ':pin_fecha_nacimiento', $data['FECHA_NACIMIENTO']);
+    oci_bind_by_name($stmt, ':pin_sexo', $data['SEXO']);
+    oci_bind_by_name($stmt, ':pin_observaciones', $data['OBSERVACIONES']);
+    oci_bind_by_name($stmt, ':pin_telefono', $data['TELEFONO']);
+    oci_bind_by_name($stmt, ':pin_direccion', $data['DIRECCION']);
+    oci_bind_by_name($stmt, ':pin_correo_electronico', $data['CORREO_ELECTRONICO']);
+
+    // OUT
+    $resultado = 0;
+    $mensaje   = '';
+
+    oci_bind_by_name($stmt, ':pout_resultado', $resultado, 32);
+    oci_bind_by_name($stmt, ':pout_mensaje',   $mensaje,   4000);
+
+    $ok = @oci_execute($stmt);
+    if (!$ok) {
+        $e = oci_error($stmt);
+        oci_free_statement($stmt);
+        $mensajeOracle = $e['message'] ?? '';
+        $mensajeLimpio = $mensajeOracle;
+
+        // Busca "ORA-200xx: " y se queda con lo que viene después
+        if (preg_match('/ORA-20\d{3}:\s*(.+)$/m', $mensajeOracle, $m)) {
+            $mensajeLimpio = $m[1]; // solo el texto del trigger
+        }
+        return [
+            'resultado' => 0,
+            'mensaje'   => $mensajeLimpio,
+        ];
+    }
     oci_free_statement($stmt);
-    
-    return $result;
+
+    return [
+      'resultado' => (int)$resultado,
+      'mensaje'   => $mensaje,
+    ];
   }
 
-  public function eliminar(int $id): bool {
-    $sql = "DELETE FROM PACIENTE WHERE ID_PACIENTE = :id";
-    
+  // DELETE -> pkg_paciente.eliminar_paciente
+  public function eliminar(int $idPaciente): array {
+    $sql = "
+      BEGIN
+        pkg_paciente.eliminar_paciente(
+          :pin_id,
+          :pout_resultado,
+          :pout_mensaje
+        );
+      END;
+    ";
+
     $stmt = oci_parse($this->conn, $sql);
-    oci_bind_by_name($stmt, ':id', $id);
-    
-    $result = oci_execute($stmt, OCI_COMMIT_ON_SUCCESS);
+
+    oci_bind_by_name($stmt, ':pin_id', $idPaciente);
+
+    $resultado = 0;
+    $mensaje   = '';
+
+    oci_bind_by_name($stmt, ':pout_resultado', $resultado, 32);
+    oci_bind_by_name($stmt, ':pout_mensaje',   $mensaje,   4000);
+
+    oci_execute($stmt);
     oci_free_statement($stmt);
-    
-    return $result;
+
+    return [
+      'resultado' => (int)$resultado,
+      'mensaje'   => $mensaje,
+    ];
   }
+
+  // Cambio de Adry: Obtener lista de pacientes ordenados por nombre
+  public function obtenerTodosOrdenados()
+  {
+      $sql = "
+          SELECT 
+              id_paciente,
+              primer_nombre,
+              segundo_nombre,
+              primer_apellido,
+              segundo_apellido,
+              primer_nombre 
+                  || ' ' || NVL(segundo_nombre, '') 
+                  || ' ' || primer_apellido 
+                  || ' ' || NVL(segundo_apellido, '') 
+                  AS nombre_completo
+          FROM paciente
+          ORDER BY primer_nombre ASC, segundo_nombre ASC
+      ";
+
+      $stmt = oci_parse($this->conn, $sql);
+      oci_execute($stmt);
+
+      $lista = [];
+      while ($row = oci_fetch_assoc($stmt)) {
+          // Normalizar claves a MAYÚSCULAS (Oracle las devuelve así)
+          $lista[] = array_change_key_case($row, CASE_UPPER);
+      }
+
+      oci_free_statement($stmt);
+      return $lista;
+  }
+
 }

@@ -1,14 +1,16 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: dockerfile
+    platform: linux/amd64
     container_name: clinica_web
     ports:
       - "8083:80"
     volumes:
-      - ./APP:/var/www            # monta TODO APP (config, controllers, models, VIEW, etc.)
-      - ./APP/VIEW:/var/www/html  # hace que el docroot sea tu carpeta VIEW
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - ./APP/VIEW:/var/www/html
+      - ./APP/CONTROLLER:/var/www/CONTROLLER
+      - ./APP/MODEL:/var/www/MODEL
+      - ./APP/config:/var/www/config
     environment:
-      - LD_LIBRARY_PATH=/opt/oracle/instantclient_23_26
-      - NLS_LANG=AMERICAN_AMERICA.AL32UTF8
+      - APACHE_DOCUMENT_ROOT=/var/www/html
