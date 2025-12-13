@@ -11,6 +11,42 @@ class PacienteController {
     }
   }
 
+  public function listarPacientesGmail(): array {
+    try {
+        return (new Paciente())->obtenerSoloGmail();
+    } catch (Throwable $e) {
+        error_log('PacienteController::listarPacientesGmail: ' . $e->getMessage());
+        return [];
+    }
+  }
+
+  public function listarPacientesIa(): array {
+    try {
+        return (new Paciente())->obtenerSoloIa();
+    } catch (Throwable $e) {
+        error_log('PacienteController::listarPacientesIa: ' . $e->getMessage());
+        return [];
+    }
+  }
+
+  public function listarPacientesProvincia(): array {
+    try {
+        return (new Paciente())->obtenerSoloProvincia();
+    } catch (Throwable $e) {
+        error_log('PacienteController::listarPacientesProvincia: ' . $e->getMessage());
+        return [];
+    }
+  }
+
+  public function listarPacientesTelefono(): array {
+    try {
+        return (new Paciente())->obtenerSoloTelefonoFormato506();
+    } catch (Throwable $e) {
+        error_log('PacienteController::listarPacientesTelefono: ' . $e->getMessage());
+        return [];
+    }
+  }
+
   public function crear(array $data): array {
     try {
       return (new Paciente())->crear($data);

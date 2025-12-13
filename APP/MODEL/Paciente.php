@@ -227,5 +227,84 @@ class Paciente {
       oci_free_statement($stmt);
       return $lista;
   }
+  public function obtenerSoloTelefonoFormato506(): array
+  {
+      $sql = "
+          SELECT *
+          FROM v_pacientes_telefono_formato_506
+          ORDER BY PRIMER_NOMBRE, PRIMER_APELLIDO
+      ";
+
+      $stmt = oci_parse($this->conn, $sql);
+      oci_execute($stmt);
+
+      $rows = [];
+      while ($r = oci_fetch_assoc($stmt)) {
+          $rows[] = $r;
+      }
+
+      oci_free_statement($stmt);
+      return $rows;
+  }
+  public function obtenerSoloProvincia(): array
+  {
+      $sql = "
+          SELECT *
+          FROM v_pacientes_direccion_alajuela_heredia
+          ORDER BY PRIMER_NOMBRE, PRIMER_APELLIDO
+      ";
+
+      $stmt = oci_parse($this->conn, $sql);
+      oci_execute($stmt);
+
+      $rows = [];
+      while ($r = oci_fetch_assoc($stmt)) {
+          $rows[] = $r;
+      }
+
+      oci_free_statement($stmt);
+      return $rows;
+  }
+
+  public function obtenerSoloIa(): array
+  {
+      $sql = "
+          SELECT *
+          FROM v_pacientes_nombre_termina_ia
+          ORDER BY PRIMER_NOMBRE, PRIMER_APELLIDO
+      ";
+
+      $stmt = oci_parse($this->conn, $sql);
+      oci_execute($stmt);
+
+      $rows = [];
+      while ($r = oci_fetch_assoc($stmt)) {
+          $rows[] = $r;
+      }
+
+      oci_free_statement($stmt);
+      return $rows;
+  }
+
+  public function obtenerSoloGmail(): array
+  {
+      $sql = "
+          SELECT *
+          FROM v_pacientes_correo_gmail
+          ORDER BY PRIMER_NOMBRE, PRIMER_APELLIDO
+      ";
+
+      $stmt = oci_parse($this->conn, $sql);
+      oci_execute($stmt);
+
+      $rows = [];
+      while ($r = oci_fetch_assoc($stmt)) {
+          $rows[] = $r;
+      }
+
+      oci_free_statement($stmt);
+      return $rows;
+  }
+
 
 }

@@ -32,8 +32,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                . '&ok=' . (int)($res['resultado'] ?? 0));
     exit;
 }
+$filtro = $_GET['filter'] ?? 'todos';
 
-$pacientes = $controller->listarPacientes();
+switch ($filtro) {
+    case 'gmail':
+        $pacientes = $controller->listarPacientesGmail();
+        break;
+
+    case 'ia':
+        $pacientes = $controller->listarPacientesIa();
+        break;
+    
+    case 'provincia':
+        $pacientes = $controller->listarPacientesProvincia();
+        break;
+
+    case 'telefono':
+        $pacientes = $controller->listarPacientesTelefono();
+        break;
+
+    default: // 'todos' u otro valor
+        $pacientes = $controller->listarPacientes();
+        break;
+}
 ?>
 
 
@@ -100,13 +121,46 @@ $pacientes = $controller->listarPacientes();
 
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 class="fw-bold text-primary mb-0">
-                        <i class="fa-solid fa-user me-2"></i>Gestión de Pacientes
-                    </h3>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregar">
-                        <i class="fa-solid fa-plus me-1"></i> Nuevo Paciente
-                    </button>
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+                    <div>
+                        <h3 class="fw-bold text-primary mb-0">
+                            <i class="fa-solid fa-user me-2"></i>Gestión de Pacientes
+                        </h3>
+
+                        <!-- Filtros -->
+                        <div class="mt-3">
+                            <div class="btn-group" role="group" aria-label="Filtros de pacientes">
+                                <a href="pacientes.php?filter=todos"
+                                class="btn btn-sm <?= ($filtro === 'todos' ? 'btn-secondary' : 'btn-outline-secondary') ?>">
+                                    Todos
+                                </a>
+
+                                <a href="pacientes.php?filter=gmail"
+                                class="btn btn-sm <?= ($filtro === 'gmail' ? 'btn-primary' : 'btn-outline-primary') ?>">
+                                    Gmail
+                                </a>
+                                <a href="pacientes.php?filter=ia"
+                                class="btn btn-sm <?= ($filtro === 'ia' ? 'btn-primary' : 'btn-outline-primary') ?>">
+                                    Nombres en "ía"
+                                </a>
+                                <!-- Los otros filtros por ahora solo de diseño -->
+                                 <a href="pacientes.php?filter=telefono"
+                                class="btn btn-sm <?= ($filtro === 'telefono' ? 'btn-primary' : 'btn-outline-primary') ?>">
+                                    Teléfonos
+                                </a>
+                                <a href="pacientes.php?filter=provincia"
+                                class="btn btn-sm <?= ($filtro === 'provincia' ? 'btn-primary' : 'btn-outline-primary') ?>">
+                                    Alajuela/Heredia
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Fin filtros -->
+                    </div>
+                    <?php if ($filtro === 'todos'): ?>
+                        <button class="btn btn-primary align-self-center" data-bs-toggle="modal" data-bs-target="#modalAgregar">
+                            <i class="fa-solid fa-plus me-1"></i> Nuevo Paciente
+                        </button>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -116,39 +170,111 @@ $pacientes = $controller->listarPacientes();
             <table class="table table-sm table-hover align-middle">
                 <thead class="table-primary">
                     <tr>
-                        <th>ID</th>
-                        <th>Cédula</th>
-                        <th>Primer Nombre</th>
-                        <th>Segundo Nombre</th>
-                        <th>Primer Apellido</th>
-                        <th>Segundo Apellido</th>
-                        <th>Fecha Nacimiento</th>
-                        <th>Sexo</th>
-                        <th>Observaciones</th>
-                        <th>Teléfono</th>
-                        <th>Dirección</th>
-                        <th>Correo Electrónico</th>
-                        <th class="text-center">Acciones</th>
+                        <?php if ($filtro === 'gmail'): ?>
+                            <th>ID</th>
+                            <th>Cédula</th>
+                            <th>Primer Nombre</th>
+                            <th>Segundo Nombre</th>
+                            <th>Primer Apellido</th>
+                            <th>Segundo Apellido</th>
+                            <th>Correo Electrónico</th>
+                        <?php elseif ($filtro === 'ia'): ?>
+                            <th>ID</th>
+                            <th>Cédula</th>
+                            <th>Primer Nombre</th>
+                            <th>Segundo Nombre</th>
+                            <th>Primer Apellido</th>
+                            <th>Segundo Apellido</th>
+                            <th>Correo Electrónico</th>
+                        <?php elseif ($filtro === 'provincia'): ?>
+                            <th>ID</th>
+                            <th>Cédula</th>
+                            <th>Primer Nombre</th>
+                            <th>Segundo Nombre</th>
+                            <th>Primer Apellido</th>
+                            <th>Segundo Apellido</th>
+                            <th>Dirección</th>
+                        <?php elseif ($filtro === 'telefono'): ?>
+                            <th>ID</th>
+                            <th>Cédula</th>
+                            <th>Primer Nombre</th>
+                            <th>Segundo Nombre</th>
+                            <th>Primer Apellido</th>
+                            <th>Segundo Apellido</th>
+                            <th>Teléfono formato +506</th>
+                        <?php else: ?>
+                            <th>ID</th>
+                            <th>Cédula</th>
+                            <th>Primer Nombre</th>
+                            <th>Primer Apellido</th>
+                            <th>Teléfono</th>
+                            <th>Correo Electrónico</th>
+                            <th class="text-center">Acciones</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!empty($pacientes)): ?>
                         <?php foreach ($pacientes as $p): ?>
                             <tr>
-                                <td><?= htmlspecialchars($p['ID_PACIENTE'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['CEDULA'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['PRIMER_NOMBRE'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['SEGUNDO_NOMBRE'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['PRIMER_APELLIDO'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['SEGUNDO_APELLIDO'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['FECHA_NACIMIENTO'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['SEXO'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['OBSERVACIONES'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['TELEFONO'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['DIRECCION'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($p['CORREO_ELECTRONICO'] ?? '') ?></td>
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-warning me-1 btn-editar"
+                                <?php if ($filtro === 'gmail'): ?>
+                                    <td><?= htmlspecialchars($p['ID_PACIENTE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['CEDULA'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_NOMBRE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['SEGUNDO_NOMBRE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_APELLIDO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['SEGUNDO_APELLIDO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['CORREO_ELECTRONICO'] ?? '') ?></td>
+                                <?php elseif ($filtro === 'ia'): ?>
+                                    <td><?= htmlspecialchars($p['ID_PACIENTE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['CEDULA'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_NOMBRE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['SEGUNDO_NOMBRE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_APELLIDO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['SEGUNDO_APELLIDO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['CORREO_ELECTRONICO'] ?? '') ?></td>
+                                <?php elseif ($filtro === 'provincia'): ?>
+                                    <td><?= htmlspecialchars($p['ID_PACIENTE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['CEDULA'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_NOMBRE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['SEGUNDO_NOMBRE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_APELLIDO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['SEGUNDO_APELLIDO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['DIRECCION'] ?? '') ?></td>
+                                <?php elseif ($filtro === 'telefono'): ?>
+                                    <td><?= htmlspecialchars($p['ID_PACIENTE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['CEDULA'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_NOMBRE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['SEGUNDO_NOMBRE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_APELLIDO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['SEGUNDO_APELLIDO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['TELEFONO_FORMATO_506'] ?? '') ?></td>
+                                <?php else: ?>
+                                    <td><?= htmlspecialchars($p['ID_PACIENTE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['CEDULA'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_NOMBRE'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['PRIMER_APELLIDO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['TELEFONO'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($p['CORREO_ELECTRONICO'] ?? '') ?></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-info me-1" title="Ver detalle"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalVer"
+                                        data-id="<?= $p['ID_PACIENTE'] ?>"
+                                        data-cedula="<?= $p['CEDULA'] ?>"
+                                        data-pnombre="<?= $p['PRIMER_NOMBRE'] ?>"
+                                        data-snombre="<?= $p['SEGUNDO_NOMBRE'] ?>"
+                                        data-papellido="<?= $p['PRIMER_APELLIDO'] ?>"
+                                        data-sapellido="<?= $p['SEGUNDO_APELLIDO'] ?>"
+                                        data-fecha="<?= $p['FECHA_NACIMIENTO'] ?>"
+                                        data-sexo="<?= $p['SEXO'] ?>"
+                                        data-observaciones="<?= $p['OBSERVACIONES'] ?>"
+                                        data-telefono="<?= $p['TELEFONO'] ?>"
+                                        data-direccion="<?= $p['DIRECCION'] ?>"
+                                        data-correo="<?= $p['CORREO_ELECTRONICO'] ?>">
+                                        <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-warning me-1 btn-editar"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalEditar"
                                         data-id="<?= htmlspecialchars($p['ID_PACIENTE'] ?? '') ?>"
@@ -164,16 +290,18 @@ $pacientes = $controller->listarPacientes();
                                         data-direccion="<?= htmlspecialchars($p['DIRECCION'] ?? '') ?>"
                                         data-correo="<?= htmlspecialchars($p['CORREO_ELECTRONICO'] ?? '') ?>">
                                         <i class="fa-solid fa-pen"></i>
-                                    </button>
-                                    <form method="post" action="pacientes.php" class="d-inline">
+                                        </button>
+
+                                        <form method="post" action="pacientes.php" class="d-inline">
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="ID_PACIENTE" value="<?= htmlspecialchars($p['ID_PACIENTE'] ?? '') ?>">
                                         <button type="submit" class="btn btn-sm btn-danger"
                                                 onclick="return confirm('¿Está seguro que desea eliminar este paciente?');">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
-                                    </form>
-                                </td>
+                                        </form>
+                                    </td>
+                                    <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
@@ -266,6 +394,90 @@ $pacientes = $controller->listarPacientes();
                         <button type="submit" class="btn btn-primary">Agregar</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal ver detalle paciente -->
+    <div class="modal fade" id="modalVer" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title text-white">
+                <i class="fa-solid fa-eye me-2"></i>Ver Paciente
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label">Cédula</label>
+                    <input type="text" class="form-control" id="viewCedula" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Primer Nombre</label>
+                    <input type="text" class="form-control" id="viewPrimerNombre" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Segundo Nombre</label>
+                    <input type="text" class="form-control" id="viewSegundoNombre" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Primer Apellido</label>
+                    <input type="text" class="form-control" id="viewPrimerApellido" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Segundo Apellido</label>
+                    <input type="text" class="form-control" id="viewSegundoApellido" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Fecha de Nacimiento</label>
+                    <input type="date" class="form-control" id="viewFechaNacimiento" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Sexo</label>
+                    <input type="text" class="form-control" id="viewSexo" readonly>
+                </div>
+
+                <div class="col-md-8">
+                    <label class="form-label">Observaciones</label>
+                    <textarea class="form-control" rows="2" id="viewObservaciones" readonly></textarea>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-control" id="viewTelefono" readonly>
+                </div>
+
+                <div class="col-md-8">
+                    <label class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="viewDireccion" readonly>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="viewCorreo" readonly>
+                </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal">
+                Cerrar
+                </button>
+            </div>
+
             </div>
         </div>
     </div>
@@ -547,6 +759,26 @@ $pacientes = $controller->listarPacientes();
             if (alertGlobal) alertGlobal.remove();
         }, 3000);
     </script>
+
+    <script>
+        document.getElementById('modalVer').addEventListener('show.bs.modal', event => {
+        const btn = event.relatedTarget;
+
+        document.getElementById('viewCedula').value          = btn.getAttribute('data-cedula') || '';
+        document.getElementById('viewPrimerNombre').value    = btn.getAttribute('data-pnombre') || '';
+        document.getElementById('viewSegundoNombre').value   = btn.getAttribute('data-snombre') || '';
+        document.getElementById('viewPrimerApellido').value  = btn.getAttribute('data-papellido') || '';
+        document.getElementById('viewSegundoApellido').value = btn.getAttribute('data-sapellido') || '';
+        document.getElementById('viewFechaNacimiento').value = btn.getAttribute('data-fecha') || '';
+        document.getElementById('viewSexo').value            = btn.getAttribute('data-sexo') || '';
+        document.getElementById('viewObservaciones').value   = btn.getAttribute('data-observaciones') || '';
+        document.getElementById('viewTelefono').value        = btn.getAttribute('data-telefono') || '';
+        document.getElementById('viewDireccion').value       = btn.getAttribute('data-direccion') || '';
+        document.getElementById('viewCorreo').value          = btn.getAttribute('data-correo') || '';
+        });
+    </script>
+
+
 </body>
 
 </html>
