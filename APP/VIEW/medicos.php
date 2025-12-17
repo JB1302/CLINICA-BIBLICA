@@ -42,7 +42,6 @@ $medicos = $controller->listarMedicos();
 $especialidades = $controller->listarEspecialidades();
 $personalDisponible = $controller->listarPersonalDisponible();
 
-// Cambio de Adry: Cargar horarios disponibles para edición
 require_once __DIR__ . '/../CONTROLLER/PersonalController.php';
 $personalController = new PersonalController();
 $horarios = $personalController->listarHorarios();
@@ -130,7 +129,6 @@ $horarios = $personalController->listarHorarios();
             <th>ID</th>
             <th>Nombre</th>
             <th>Especialidad</th>
-            <!-- Cambio de Adry: Columna Consultorios renombrada a Horarios -->
             <th>Horarios</th>
 
             <th class="text-center">Acciones</th>
@@ -144,8 +142,7 @@ $horarios = $personalController->listarHorarios();
                 <td><?= htmlspecialchars($m['ID_MEDICO'] ?? '') ?></td>
                 <td><?= htmlspecialchars($m['NOMBRE_MEDICO'] ?? '') ?></td>
                 <td><?= htmlspecialchars($m['ESPECIALIDAD'] ?? '') ?></td>
-                <!-- Cambio de Adry: Agregada columna de horarios -->
-                <td><?= htmlspecialchars($m['HORARIOS'] ?? 'Sin horarios') ?></td>
+                <td><?= htmlspecialchars($m['HORARIO'] ?? 'Sin horario') ?></td>
 
                 <td class="text-center">
                   <button class="btn btn-sm btn-warning me-1"
@@ -259,7 +256,6 @@ $horarios = $personalController->listarHorarios();
             </select>
           </div>
 
-          <!-- Cambio de Adry: Agregar campo para editar horario del médico -->
           <div class="mb-3">
             <label class="form-label">Horario de Trabajo</label>
             <select id="editHorario" name="ID_HORARIO" class="form-select">
@@ -360,7 +356,6 @@ $horarios = $personalController->listarHorarios();
                 document.getElementById('editIdMedico').value     = button.getAttribute('data-id') || '';
                 document.getElementById('editNombre').value       = button.getAttribute('data-nombre') || '';
                 document.getElementById('editEspecialidad').value = button.getAttribute('data-especialidad-id') || '';
-                // Cambio de Adry: Poblar campo de horario
                 document.getElementById('editHorario').value      = button.getAttribute('data-id-horario') || '';
             });
         }

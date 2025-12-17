@@ -9,7 +9,6 @@ class Paciente {
   }
 
   public function obtenerTodos(): array {
-    // Cambio de Adry: Ordenamiento descendente por ID_PACIENTE para mostrar los más recientes primero
     $sql = "SELECT ID_PACIENTE, CEDULA, PRIMER_NOMBRE, SEGUNDO_NOMBRE,
                    PRIMER_APELLIDO, SEGUNDO_APELLIDO, TO_CHAR(FECHA_NACIMIENTO, 'YYYY-MM-DD') AS FECHA_NACIMIENTO,
                    SEXO, OBSERVACIONES, TELEFONO, DIRECCION, CORREO_ELECTRONICO
@@ -26,7 +25,6 @@ class Paciente {
     return $rows;
   }
 
-  // INSERT -> pkg_paciente.agregar_paciente
   public function crear(array $data): array {
     $sql = "
       BEGIN
@@ -50,7 +48,6 @@ class Paciente {
 
     $stmt = oci_parse($this->conn, $sql);
 
-    // IN
     oci_bind_by_name($stmt, ':pin_cedula', $data['CEDULA']);
     oci_bind_by_name($stmt, ':pin_primer_nombre', $data['PRIMER_NOMBRE']);
     oci_bind_by_name($stmt, ':pin_segundo_nombre', $data['SEGUNDO_NOMBRE']);
@@ -79,7 +76,7 @@ class Paciente {
 
         // Busca "ORA-200xx: " y se queda con lo que viene después
         if (preg_match('/ORA-20\d{3}:\s*(.+)$/m', $mensajeOracle, $m)) {
-            $mensajeLimpio = $m[1]; // solo el texto del trigger
+            $mensajeLimpio = $m[1]; 
         }
         return [
             'resultado' => 0,
@@ -95,7 +92,6 @@ class Paciente {
     ];
   }
 
-  // UPDATE -> pkg_paciente.editar_paciente
   public function actualizar(array $data): array {
     $sql = "
       BEGIN
@@ -120,7 +116,6 @@ class Paciente {
 
     $stmt = oci_parse($this->conn, $sql);
 
-    // IN
     oci_bind_by_name($stmt, ':pin_id', $data['ID_PACIENTE']);
     oci_bind_by_name($stmt, ':pin_cedula', $data['CEDULA']);
     oci_bind_by_name($stmt, ':pin_primer_nombre', $data['PRIMER_NOMBRE']);
@@ -150,7 +145,7 @@ class Paciente {
 
         // Busca "ORA-200xx: " y se queda con lo que viene después
         if (preg_match('/ORA-20\d{3}:\s*(.+)$/m', $mensajeOracle, $m)) {
-            $mensajeLimpio = $m[1]; // solo el texto del trigger
+            $mensajeLimpio = $m[1]; 
         }
         return [
             'resultado' => 0,
@@ -165,7 +160,6 @@ class Paciente {
     ];
   }
 
-  // DELETE -> pkg_paciente.eliminar_paciente
   public function eliminar(int $idPaciente): array {
     $sql = "
       BEGIN
@@ -196,7 +190,7 @@ class Paciente {
     ];
   }
 
-  // Cambio de Adry: Obtener lista de pacientes ordenados por nombre
+  // Obtener lista de pacientes ordenados por nombre completo
   public function obtenerTodosOrdenados()
   {
       $sql = "
@@ -220,7 +214,6 @@ class Paciente {
 
       $lista = [];
       while ($row = oci_fetch_assoc($stmt)) {
-          // Normalizar claves a MAYÚSCULAS (Oracle las devuelve así)
           $lista[] = array_change_key_case($row, CASE_UPPER);
       }
 

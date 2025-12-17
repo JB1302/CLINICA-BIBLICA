@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $Personals = $controller->listarPersonals();
-// Cambio de Adry: Cargar horarios de AGENDA_HORARIO para selector
 $horarios = $controller->listarHorarios();
 ?>
 
@@ -119,7 +118,6 @@ $horarios = $controller->listarHorarios();
     </div>
 
     <!-- TABLA -->
-    <!-- Cambio de Adry: Interfaz limpia mostrando solo información esencial -->
     <div class="table-responsive shadow-sm">
       <table class="table table-sm table-hover align-middle">
         <thead class="table-primary">
@@ -132,8 +130,6 @@ $horarios = $controller->listarHorarios();
             <th>Puesto</th>
             <th>Teléfono</th>
             <th>Activo</th>
-            <!-- Cambio de Adry: Columnas ocultas para interfaz limpia (ver en modal detalle):
-                 Correo Electrónico, Dirección, Provincia, Cantón, Distrito, Horario, Fecha Contrato -->
             <th class="text-center">Acciones</th>
           </tr>
         </thead>
@@ -149,8 +145,6 @@ $horarios = $controller->listarHorarios();
                 <td><?= htmlspecialchars($p['PUESTO'] ?? '') ?></td>
                 <td><?= htmlspecialchars($p['TELEFONO'] ?? '') ?></td>
                 <td><?= htmlspecialchars($p['ACTIVO'] ?? '') ?></td>
-                <!-- Cambio de Adry: Columnas ocultas para interfaz limpia (disponibles en modal detalle):
-                     Correo, Dirección, Provincia, Cantón, Distrito, Horario, Fecha Contrato -->
                 <td class="text-center">
                   <button class="btn btn-sm btn-info me-1" onclick="verDetalle(<?= $p['ID_PERSONAL'] ?>)" title="Ver detalle">
                     <i class="fa-solid fa-eye"></i>
@@ -198,7 +192,6 @@ $horarios = $controller->listarHorarios();
             <?php endforeach; ?>
           <?php else: ?>
             <tr>
-              <!-- Cambio de Adry: Actualizado colspan a 9 (ID, Nombres, Apellidos, Puesto, Teléfono, Activo, Acciones) -->
               <td colspan="9" class="text-center text-muted">No hay Personals registrados</td>
             </tr>
           <?php endif; ?>
@@ -231,7 +224,6 @@ $horarios = $controller->listarHorarios();
                 <input type="text" class="form-control" name="SEGUNDO_NOMBRE">
               </div>
 
-              <!-- Cambio de Adry: Agregados campos de apellidos -->
               <div class="col-md-6">
                 <label class="form-label">Primer Apellido</label>
                 <input type="text" class="form-control" name="PRIMER_APELLIDO" required>
@@ -243,7 +235,6 @@ $horarios = $controller->listarHorarios();
 
               <div class="col-md-6">
                 <label class="form-label">Puesto</label>
-                <!-- Cambio de Adry: Campo de texto cambiado a selector con puestos en orden alfabético -->
                 <select class="form-select" name="PUESTO" required>
                   <option value="">Selecciona...</option>
                   <option value="Administrador">Administrador</option>
@@ -319,7 +310,6 @@ $horarios = $controller->listarHorarios();
                 <input type="text" class="form-control" name="DISTRITO">
               </div>
 
-              <!-- Cambio de Adry: Campo de horario cambiado de texto a selector con horarios de AGENDA_HORARIO -->
               <div class="col-md-6">
                 <label class="form-label">Horario de Trabajo</label>
                 <select class="form-select" name="HORARIO_TRABAJO">
@@ -332,7 +322,6 @@ $horarios = $controller->listarHorarios();
                 </select>
               </div>
 
-              <!-- Cambio de Adry: Campo de fecha de contratación -->
               <div class="col-md-6">
                 <label class="form-label">Fecha de Contratación</label>
                 <input type="date" class="form-control" name="FECHA_CONTRATACION" required>
@@ -375,7 +364,6 @@ $horarios = $controller->listarHorarios();
                 <input type="text" class="form-control" id="edit-snombre" name="SEGUNDO_NOMBRE">
               </div>
 
-              <!-- Cambio de Adry: Agregados campos de apellidos -->
               <div class="col-md-6">
                 <label for="edit-papellido" class="form-label">Primer Apellido</label>
                 <input type="text" class="form-control" id="edit-papellido" name="PRIMER_APELLIDO" required>
@@ -387,7 +375,6 @@ $horarios = $controller->listarHorarios();
 
               <div class="col-md-6">
                 <label for="edit-puesto" class="form-label">Puesto</label>
-                <!-- Cambio de Adry: Campo de texto cambiado a selector con puestos en orden alfabético -->
                 <select class="form-select" id="edit-puesto" name="PUESTO" required>
                   <option value="">Selecciona...</option>
                   <option value="Administrador">Administrador</option>
@@ -465,7 +452,6 @@ $horarios = $controller->listarHorarios();
                 <input type="text" class="form-control" id="edit-distrito" name="DISTRITO">
               </div>
 
-              <!-- Cambio de Adry: Campo de horario cambiado de texto a selector con horarios de AGENDA_HORARIO -->
               <div class="col-md-6">
                 <label for="edit-horario" class="form-label">Horario de Trabajo</label>
                 <select class="form-select" id="edit-horario" name="HORARIO_TRABAJO">
@@ -478,7 +464,6 @@ $horarios = $controller->listarHorarios();
                 </select>
               </div>
 
-              <!-- Cambio de Adry: Campo de fecha de contratación -->
               <div class="col-md-6">
                 <label for="edit-fecha-contratacion" class="form-label">Fecha de Contratación</label>
                 <input type="date" class="form-control" id="edit-fecha-contratacion" name="FECHA_CONTRATACION" required>
@@ -519,7 +504,6 @@ $horarios = $controller->listarHorarios();
 
 
   <!-- FOOTER -->
-  <!-- Cambio de Adry: Footer estandarizado con información de contacto, redes sociales y suscripción -->
   <footer class="py-5 mt-auto" style=" color:#fff;">
     <div class="container">
       <div class="row align-items-center">

@@ -570,7 +570,6 @@ switch ($filtro) {
     </div>
 
     <!-- FOOTER -->
-    <!-- Cambio de Adry: Footer estandarizado con información de contacto, redes sociales y suscripción -->
     <footer class="py-5 mt-auto" style=" color:#fff;">
         <div class="container">
             <div class="row align-items-center">

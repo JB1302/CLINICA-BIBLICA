@@ -12,8 +12,7 @@ class Personal
 
   public function obtenerTodos(): array
   {
-    // Cambio de Adry: Agregados PRIMER_APELLIDO, SEGUNDO_APELLIDO, HORARIO de AGENDA_HORARIO y FECHA_REGISTRO de CONTRATO
-    // Cambio de Adry: Ordenamiento descendente por ID_PERSONAL para mostrar los más recientes primero
+    // Ordenamiento descendente por ID_PERSONAL para mostrar los más recientes primero
     $sql = "SELECT p.ID_PERSONAL, p.PRIMER_NOMBRE, p.SEGUNDO_NOMBRE, p.PRIMER_APELLIDO, p.SEGUNDO_APELLIDO, 
                    p.PUESTO, p.ACTIVO, p.CORREO_ELECTRONICO, p.TELEFONO, p.DIRECCION, 
                    p.PROVINCIA, p.CANTON, p.DISTRITO, p.HORARIO_TRABAJO,
@@ -23,7 +22,6 @@ class Personal
             LEFT JOIN Contrato c ON p.ID_PERSONAL = c.ID_PERSONAL
             LEFT JOIN AGENDA_HORARIO ah ON p.HORARIO_TRABAJO = ah.ID_HORARIO
             ORDER BY p.ID_PERSONAL DESC";
-
     $stmt = oci_parse($this->conn, $sql);
     oci_execute($stmt);
 
@@ -36,7 +34,6 @@ class Personal
 
   public function crear(array $data): array
   {
-    // Cambio de Adry: Agregados PRIMER_APELLIDO, SEGUNDO_APELLIDO y HORARIO_TRABAJO al procedimiento
     $sql = "BEGIN
               pkg_personal.agregar_personal(
                 :pin_primer_nombre,
@@ -84,9 +81,8 @@ class Personal
         $mensajeOracle = $e['message'] ?? '';
         $mensajeLimpio = $mensajeOracle;
 
-        // Busca "ORA-200xx: " y se queda con lo que viene después
         if (preg_match('/ORA-20\d{3}:\s*(.+)$/m', $mensajeOracle, $m)) {
-            $mensajeLimpio = $m[1]; // solo el texto del trigger
+            $mensajeLimpio = $m[1]; 
         }
         return [
             'resultado' => 0,
@@ -95,9 +91,9 @@ class Personal
     }
     oci_free_statement($stmt);
 
-    // Cambio de Adry: Si se creó exitosamente el personal, crear el contrato
+    // Crear contrato si se proporciona fecha de contratación
     if ((int)$resultado === 1 && !empty($data['FECHA_CONTRATACION'])) {
-      // Obtener el ID del personal recién creado
+      // Obtener el id del personal creado
       $sqlId = "SELECT MAX(ID_PERSONAL) as ULTIMO_ID FROM PERSONAL";
       $stmtId = oci_parse($this->conn, $sqlId);
       oci_execute($stmtId);
@@ -118,9 +114,9 @@ class Personal
       }
     }
 
-    // Cambio de Adry: Si se creó el personal exitosamente y tiene horario, actualizar MEDICO.ID_HORARIO si es médico
+    // Actualizar horario en tabla MEDICO si el personal es médico
     if ((int)$resultado === 1 && !empty($data['HORARIO_TRABAJO'])) {
-      // Obtener el ID del personal recién creado si no se tiene
+
       if (!isset($idPersonal)) {
         $sqlId = "SELECT MAX(ID_PERSONAL) as ULTIMO_ID FROM PERSONAL";
         $stmtId = oci_parse($this->conn, $sqlId);
@@ -145,7 +141,6 @@ class Personal
         oci_commit($this->conn);
       }
     }
-
     return [
       'resultado' => (int)$resultado,
       'mensaje'   => $mensaje,
@@ -153,7 +148,6 @@ class Personal
   }
   public function actualizar(array $data): array
   {
-    // Cambio de Adry: Agregados PRIMER_APELLIDO, SEGUNDO_APELLIDO y HORARIO_TRABAJO al procedimiento
     $sql = "BEGIN
               pkg_personal.editar_personal(
                 :pin_id_personal,
@@ -215,7 +209,7 @@ class Personal
     }
     oci_free_statement($stmt);
 
-    // Cambio de Adry: Si se actualizó exitosamente y hay fecha de contratación, actualizar el contrato
+    // Actualizar o crear contrato si se proporciona fecha de contratación
     if ((int)$resultado === 1 && !empty($data['FECHA_CONTRATACION']) && $idPersonal > 0) {
       // Verificar si ya existe un contrato
       $sqlCheck = "SELECT COUNT(*) as TOTAL FROM CONTRATO WHERE ID_PERSONAL = :id_personal";
@@ -249,7 +243,7 @@ class Personal
       oci_commit($this->conn);
     }
 
-    // Cambio de Adry: Si se actualizó el personal exitosamente y tiene horario, actualizar MEDICO.ID_HORARIO si es médico
+    // Actualizar horario en tabla MEDICO si el personal es médico
     if ((int)$resultado === 1 && !empty($data['HORARIO_TRABAJO']) && $idPersonal > 0) {
       $idHorario = (int)$data['HORARIO_TRABAJO'];
       
@@ -264,7 +258,6 @@ class Personal
       oci_free_statement($stmtUpdateMedico);
       oci_commit($this->conn);
     }
-
     return [
       'resultado' => (int)$resultado,
       'mensaje'   => $mensaje,
@@ -282,9 +275,7 @@ class Personal
             END;";
 
     $stmt = oci_parse($this->conn, $sql);
-
     oci_bind_by_name($stmt, ':pin_id_personal', $idPersonal);
-
     $resultado = 0;
     $mensaje   = '';
     oci_bind_by_name($stmt, ':pout_resultado', $resultado, 32);
@@ -298,16 +289,14 @@ class Personal
     ];
   }
 
-  // Cambio de Adry: Agregado método para obtener horarios de AGENDA_HORARIO
+  // Obtener horarios disponibles de AGENDA_HORARIO
   public function obtenerHorarios(): array
   {
     $sql = "SELECT ID_HORARIO, HORARIO, DIA_SEMANA, TURNO
             FROM AGENDA_HORARIO
             ORDER BY DIA_SEMANA, TURNO";
-
     $stmt = oci_parse($this->conn, $sql);
     oci_execute($stmt);
-
     $rows = [];
     while ($r = oci_fetch_assoc($stmt)) $rows[] = $r;
 
@@ -315,7 +304,7 @@ class Personal
     return $rows;
   }
 
-  // Método para obtener detalle completo de un personal
+  // Obtener detalle completo de un personal
   public function obtenerDetalle(int $id): array
   {
     $sql = "SELECT p.ID_PERSONAL, 
@@ -348,8 +337,6 @@ class Personal
         $personal['FECHA_REGISTRO'] = $fecha->format('d/m/Y');
       }
     }
-
     return ['personal' => $personal];
   }
-
 }

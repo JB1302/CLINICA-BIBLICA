@@ -42,9 +42,9 @@ $citas = $controller->listarCitas();
 $estados = $controller->listarEstados();
 $pacientes = $controller->listarPacientes();
 $medicos = $controller->listarMedicos();
-$motivosCancelacion = $controller->listarMotivosCancelacion(); // Cambio de Adry: Obtener motivos de cancelación en las CITAS
-$clinicas = $controller->listarClinicas(); // Cambio de Adry: Obtener clínicas
-$consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener consultorios
+$motivosCancelacion = $controller->listarMotivosCancelacion();
+$clinicas = $controller->listarClinicas();
+$consultorios = $controller->listarConsultorios();
 ?>
 
 <!DOCTYPE html>
@@ -145,7 +145,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
             <th>Estado</th>
             <th>Motivo Cancelación</th>
 
-            <!-- Cambio de Adry: Columna Turno comentada porque no existe en AGENDA_MEDICA -->
             <!-- <th>Turno</th> -->
             <th>Observaciones</th>
 
@@ -172,7 +171,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
                 <td><?= htmlspecialchars($c['ESTADO_CITA'] ?? '') ?></td>
                 <td><?= htmlspecialchars($c['MOTIVO_CANCELACION'] ?? '') ?></td>
 
-                <!-- Cambio de Adry: Columna Turno comentada porque no existe en AGENDA_MEDICA -->
                 <!-- <td><?= htmlspecialchars($c['TURNO_INICIO'] ?? '') ?> - <?= htmlspecialchars($c['TURNO_FIN'] ?? '') ?></td> -->
 
                 <td><?= htmlspecialchars($c['OBSERVACIONES'] ?? '') ?></td>
@@ -265,7 +263,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
                 </select>
               </div>
 
-              <!-- Cambio de Adry: Leyenda con horarios disponibles del médico -->
               <div class="col-12">
                 <div id="horarios-info-nuevo" class="alert alert-info d-none">
                   <strong><i class="fa-solid fa-clock me-1"></i> Horarios disponibles:</strong>
@@ -288,7 +285,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
                 <input type="time" class="form-control" name="hora_fin" required>
               </div>
 
-              <!-- Cambio de Adry: Agregados selectores de clínica y consultorio -->
               <div class="col-md-6">
                 <label class="form-label">Clínica</label>
                 <select class="form-select" name="id_clinica" id="nuevo-clinica" required>
@@ -326,7 +322,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
               </div>
             </div>
 
-            <!-- Cambio de Adry: Alerta para mostrar errores sin cerrar el modal -->
             <div id="alertaNuevaCita" class="alert alert-danger d-none mt-3" role="alert"></div>
             <div id="alertaErrorCita" class="alert alert-danger d-none mt-3" role="alert"></div>
 
@@ -380,7 +375,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
                 </select>
               </div>
 
-              <!-- Cambio de Adry: Leyenda con horarios disponibles del médico -->
               <div class="col-12">
                 <div id="horarios-info-editar" class="alert alert-info d-none">
                   <strong><i class="fa-solid fa-clock me-1"></i> Horarios disponibles:</strong>
@@ -403,7 +397,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
                 <input type="time" class="form-control" name="hora_fin" required>
               </div>
 
-              <!-- Cambio de Adry: Agregados selectores de clínica y consultorio en editar -->
               <div class="col-md-6">
                 <label class="form-label">Clínica</label>
                 <select class="form-select" name="id_clinica" id="editar-clinica" required>
@@ -446,7 +439,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
               </div>
             </div>
 
-            <!-- Cambio de Adry: Alerta para mostrar errores sin cerrar el modal -->
             <div id="alertaEditarCita" class="alert alert-danger d-none mt-3" role="alert"></div>
 
             <div class="mt-4 d-flex gap-2">
@@ -476,7 +468,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
             <input type="hidden" name="action" value="cancel">
             <input type="hidden" name="id_cita" value="">
 
-            <!-- Cambio de Adry: Agregado select de motivos de cancelación -->
             <div class="mb-3">
               <label class="form-label">Motivo de cancelación <span class="text-danger">*</span></label>
               <select class="form-select" name="id_motivo_cancelacion" required>
@@ -699,7 +690,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
     }
   </script>
 
-  <!-- Cambio de Adry: Script para cargar horarios disponibles del médico -->
   <script>
     // Variables globales para almacenar horarios
     let horariosNuevo = null;
@@ -714,7 +704,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
         return;
       }
 
-      // Cambio de Adry: Archivo en la misma carpeta
       const url = 'test_horarios.php?id_medico=' + idMedico;
       console.log('Fetching URL:', url);
       
@@ -820,7 +809,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
     });
   </script>
 
-  <!-- Cambio de Adry: Script para enviar formularios vía AJAX y mostrar errores sin cerrar modal -->
   <script>
     // Función para enviar formulario con AJAX
     function enviarFormularioAjax(formId, alertaId) {
@@ -891,7 +879,6 @@ $consultorios = $controller->listarConsultorios(); // Cambio de Adry: Obtener co
         }
       });
 
-    // Cambio de Adry: Script para cargar consultorios según clínica seleccionada
     const consultoriosPorClinica = <?= json_encode($consultorios) ?>;
 
     // Función global para cargar consultorios en un select

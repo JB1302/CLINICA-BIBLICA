@@ -15,7 +15,7 @@ class Medico
    */
   public function obtenerTodos(): array
   {
-    // Cambio de Adry: Obtener horario directamente desde MEDICO.ID_HORARIO con JOIN a AGENDA_HORARIO
+    //  Obtener horario directamente desde MEDICO.ID_HORARIO con JOIN a AGENDA_HORARIO
     $sql = "SELECT
               m.id_medico                                AS ID_MEDICO,
               p.primer_nombre || ' ' || p.primer_apellido AS NOMBRE_MEDICO,
@@ -35,30 +35,7 @@ class Medico
                 ON ah.id_horario = m.id_horario
             ORDER BY NOMBRE_MEDICO, e.nombre";
     
-    /* Cambio de Adry: Query anterior con AGENDA_MEDICA comentada (ya no se usa)
-    $sql = "SELECT
-              m.id_medico                                AS ID_MEDICO,
-              p.primer_nombre || ' ' || p.primer_apellido AS NOMBRE_MEDICO,
-              e.nombre                                   AS ESPECIALIDAD,
-              e.id_especialidad                          AS ID_ESPECIALIDAD,
-              LISTAGG(DISTINCT ah.horario, ', ') WITHIN GROUP (ORDER BY ah.horario) AS HORARIOS
-            FROM medico m
-              JOIN personal p
-                ON p.id_personal = m.id_personal
-              LEFT JOIN medico_especialidad me
-                ON me.id_medico = m.id_medico
-               AND me.hasta IS NULL
-              LEFT JOIN especialidad e
-                ON e.id_especialidad = me.id_especialidad
-              LEFT JOIN agenda_medica ag
-                ON ag.id_medico = m.id_medico
-               AND (ag.vigente_hasta IS NULL OR ag.vigente_hasta >= SYSDATE)
-              LEFT JOIN agenda_horario ah
-                ON ah.id_horario = ag.id_horario
-            GROUP BY m.id_medico, p.primer_nombre, p.primer_apellido, e.nombre, e.id_especialidad
-            ORDER BY NOMBRE_MEDICO, e.nombre";
-    */
-
+    
     $stmt = oci_parse($this->conn, $sql);
     oci_execute($stmt);
 
@@ -142,11 +119,9 @@ class Medico
     $idPersonal = (int)($data['ID_PERSONAL'] ?? 0);
     $idEsp      = (int)($data['ID_ESPECIALIDAD'] ?? 0);
 
-    // IN
     oci_bind_by_name($stmt, ':pin_id_personal',     $idPersonal);
     oci_bind_by_name($stmt, ':pin_id_especialidad', $idEsp);
 
-    // OUT
     $resultado = 0;
     $mensaje   = '';
 
@@ -165,7 +140,7 @@ class Medico
   /**
    * Actualizar médico -> pkg_medico.editar_medico
    * Espera: ID_MEDICO, NOMBRE (completo), ID_ESPECIALIDAD
-   * Cambio de Adry: Agregar actualización de ID_HORARIO directamente en MEDICO
+   * Agregar actualización de ID_HORARIO directamente en MEDICO
    */
   public function actualizar(array $data): array
   {
@@ -185,12 +160,10 @@ class Medico
     $nombre   = $data['NOMBRE'] ?? '';
     $idEsp    = (int)($data['ID_ESPECIALIDAD'] ?? 0);
 
-    // IN
     oci_bind_by_name($stmt, ':pin_id_medico',       $idMedico);
     oci_bind_by_name($stmt, ':pin_nombre',          $nombre);
     oci_bind_by_name($stmt, ':pin_id_especialidad', $idEsp);
 
-    // OUT
     $resultado = 0;
     $mensaje   = '';
 
@@ -200,7 +173,7 @@ class Medico
     oci_execute($stmt);
     oci_free_statement($stmt);
 
-    // Cambio de Adry: Actualizar ID_HORARIO directamente en MEDICO si se proporcionó
+    //  Actualizar ID_HORARIO directamente en MEDICO si se proporcionó
     if ((int)$resultado === 1 && isset($data['ID_HORARIO'])) {
       $idHorario = $data['ID_HORARIO'];
       
@@ -244,10 +217,8 @@ class Medico
 
     $stmt = oci_parse($this->conn, $sql);
 
-    // IN
     oci_bind_by_name($stmt, ':pin_id_medico', $idMedico);
 
-    // OUT
     $resultado = 0;
     $mensaje   = '';
 

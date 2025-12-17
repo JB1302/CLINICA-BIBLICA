@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-// Cambio de Adry: Modelo para gestión de expedientes médicos
+// Modelo para gestión de expedientes médicos
 class Expediente
 {
     private $conn;
@@ -11,7 +11,7 @@ class Expediente
         $this->conn = Database::get();
     }
 
-    // Cambio de Adry: Obtener todos los expedientes con JOIN a PACIENTE
+    // Obtener todos los expedientes con JOIN a PACIENTE
     public function obtenerTodos(): array
     {
         $sql = "SELECT
@@ -44,7 +44,7 @@ class Expediente
         return $rows;
     }
 
-    // Cambio de Adry: Obtener detalle de expediente por ID con información del paciente
+    // Obtener detalle de expediente por ID con información del paciente
     public function obtenerPorId(int $idExpediente): ?array
     {
         $sql = "SELECT
@@ -76,7 +76,7 @@ class Expediente
         return $row ?: null;
     }
 
-    // Cambio de Adry: Obtener historial de citas con JOIN a MEDICO, PERSONAL y ESPECIALIDAD
+    //  Obtener historial de citas con JOIN a MEDICO, PERSONAL y ESPECIALIDAD
     public function obtenerCitasPorExpediente(int $idExpediente): array
     {
         $sql = "SELECT
@@ -150,7 +150,7 @@ class Expediente
         ];
     }
 
-    // Cambio de Adry: Actualizar solo las NOTAS del expediente
+    // Actualizar solo las NOTAS del expediente
     public function actualizarExpediente(int $idExpediente, ?string $notas = null): array
     {
         $sql = "
@@ -184,7 +184,7 @@ class Expediente
         ];
     }
 
-    // Cambio de Adry: Listar pacientes que aún no tienen expediente creado
+    //  Listar pacientes que aún no tienen expediente creado
     public function obtenerPacientesSinExpediente(): array
     {
         $sql = "SELECT

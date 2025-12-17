@@ -37,10 +37,9 @@ class Cita
       c.id_estado AS ESTADO,
       es.nombre_estado AS estado_cita,
       mc.nombre AS motivo_cancelacion,
-      -- Cambio de Adry: Comentado porque AGENDA_MEDICA no tiene columnas HORA_INICIO/HORA_FIN
-      -- ag.dia_semana,
-      -- TO_CHAR(ag.hora_inicio, 'HH24:MI') AS turno_inicio,
-      -- TO_CHAR(ag.hora_fin, 'HH24:MI') AS turno_fin,
+
+      -- Comentado porque AGENDA_MEDICA no tiene columnas HORA_INICIO/HORA_FIN
+
       c.observaciones
       FROM cita c
       JOIN paciente p ON p.id_paciente = c.id_paciente
@@ -114,7 +113,7 @@ class Cita
       return $estados;
   }
 
-  // Cambio de Adry: Agregado método para obtener motivos de cancelación
+  //  método para obtener motivos de cancelación
   public function obtenerMotivosCancelacion(): array
   {
       $sql = "SELECT id_motivo_cancelacion, nombre FROM motivo_cancelacion ORDER BY nombre";
@@ -130,7 +129,7 @@ class Cita
       return $motivos;
   }
 
-  // Cambio de Adry: Agregado método para obtener clínicas
+  // metodo para obtener clínicas
   public function obtenerClinicas(): array
   {
       $sql = "SELECT ID_CLINICA, NOMBRE, CODIGO_CLINICA, TELEFONO FROM CLINICA ORDER BY NOMBRE";
@@ -146,7 +145,7 @@ class Cita
       return $clinicas;
   }
 
-  // Cambio de Adry: Agregado método para obtener consultorios (opcionalmente filtrados por clínica)
+  //  metodo para obtener consultorios (opcionalmente filtrados por clínica)
   public function obtenerConsultorios(?int $idClinica = null): array
   {
       if ($idClinica !== null) {
@@ -180,9 +179,9 @@ class Cita
     public function crearCita(
     int $idPaciente,
     int $idMedico,
-    string $fecha,         // Formato: DD/MM/YYYY
-    string $horaInicio,    // Formato: HH24:MI
-    string $horaFin,       // Formato: HH24:MI
+    string $fecha,         
+    string $horaInicio,    
+    string $horaFin,       
     int $idEstado,
     int $idConsultorio,
     ?string $observaciones = null
@@ -214,7 +213,6 @@ class Cita
 
     $stmt = oci_parse($this->conn, $sql);
 
-    // IN
     oci_bind_by_name($stmt, ':pin_id_paciente', $idPaciente);
     oci_bind_by_name($stmt, ':pin_id_medico',   $idMedico);
     oci_bind_by_name($stmt, ':pin_fecha',       $fechaFormat);
@@ -224,7 +222,6 @@ class Cita
     oci_bind_by_name($stmt, ':pin_id_consultorio', $idConsultorio);
     oci_bind_by_name($stmt, ':pin_observaciones', $observaciones, 4000);
 
-    // OUT
     $resultado = 0;
     $mensaje   = '';
     oci_bind_by_name($stmt, ':pout_resultado', $resultado, 10);
@@ -239,7 +236,7 @@ class Cita
 
         // Busca "ORA-200xx: " y se queda con lo que viene después
         if (preg_match('/ORA-20\d{3}:\s*(.+)$/m', $mensajeOracle, $m)) {
-            $mensajeLimpio = $m[1]; // solo el texto del trigger
+            $mensajeLimpio = $m[1]; 
         }
         return [
             'resultado' => 0,
@@ -363,7 +360,7 @@ class Cita
     ];
   }
 
-  // Cambio de Adry: Obtener horario del médico directamente desde MEDICO.ID_HORARIO
+  // Obtener horario del medico directamente desde MEDICO.ID_HORARIO
   public function obtenerHorariosMedico(int $idMedico): array
   {
     $sql = "SELECT ah.horario, ah.dia_semana, ah.turno, ah.hora_inicio, ah.hora_fin

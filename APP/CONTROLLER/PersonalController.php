@@ -47,7 +47,7 @@ class PersonalController {
     }
   }
 
-  // Cambio de Adry: Agregado método para listar horarios de AGENDA_HORARIO
+  // método para listar horarios de AGENDA_HORARIO
   public function listarHorarios(): array {
     try {
       return (new Personal())->obtenerHorarios();
@@ -57,7 +57,7 @@ class PersonalController {
     }
   }
 
-  // Método para obtener detalle de un personal
+  // metodo para obtener detalle de un personal
   public function obtenerDetalle(): array {
     try {
       $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;

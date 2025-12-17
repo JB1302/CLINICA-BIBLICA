@@ -1,5 +1,5 @@
 <?php
-// Cambio de Adry: Manejo de peticiones AJAX ANTES de cargar dependencias para evitar output
+//  Manejo de peticiones AJAX ANTES de cargar dependencias para evitar output
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'obtener_horarios_medico') {
     require_once __DIR__ . '/../MODEL/Cita.php';
     header('Content-Type: application/json');
@@ -92,7 +92,7 @@ class CitaController {
       }
   }
 
-  // Cambio de Adry: Agregado método para listar motivos de cancelación
+  //  método para listar motivos de cancelacion
   public function listarMotivosCancelacion(): array
   {
       try {
@@ -104,7 +104,7 @@ class CitaController {
       }
   }
 
-  // Cambio de Adry: Agregado método para listar clínicas
+  // método para listar las clínicas
   public function listarClinicas(): array
   {
       try {
@@ -116,7 +116,7 @@ class CitaController {
       }
   }
 
-  // Cambio de Adry: Agregado método para listar consultorios por clínica
+  // metodo para listar consultorios por clinica
   public function listarConsultorios(?int $idClinica = null): array
   {
       try {
@@ -191,7 +191,7 @@ class CitaController {
     }
   }
 
-  // Cambio de Adry: Obtener horarios disponibles de un médico
+  // Obtener horarios disponibles de un doctor
   public function obtenerHorariosMedico(int $idMedico): array {
     try {
       $cita = new Cita();

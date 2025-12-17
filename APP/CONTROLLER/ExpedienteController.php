@@ -48,7 +48,7 @@ class ExpedienteController
         exit;
     }
 
-    // Cambio de Adry: Actualizar solo las NOTAS del expediente
+    // Actualizar solo las NOTAS del expediente
     public function actualizar(): void
     {
         $idExpediente = (int) ($_POST['id_expediente'] ?? 0);
@@ -69,16 +69,14 @@ class ExpedienteController
         return $this->model->obtenerPacientesSinExpediente();
     }
 
-    // Cambio de Adry: Método para obtener detalle en JSON (reemplaza API)
+    //  Metodo para obtener detalle en JSON
     public function obtenerDetalleJSON(int $idExpediente): void
     {
         header('Content-Type: application/json');
-        
         if ($idExpediente <= 0) {
             echo json_encode(['error' => 'ID de expediente inválido']);
             exit;
         }
-
         $expediente = $this->obtenerPorId($idExpediente);
 
         if (!$expediente) {
