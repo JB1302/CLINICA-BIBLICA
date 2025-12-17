@@ -1,53 +1,3 @@
--- PAQUETES 
-
--- PAQUETES INCLUIDOS:
--- 1. PKG_PERSONAL 
--- 2. PKG_MEDICO
--- 3. PKG_PACIENTE
--- 4. PKG_CITAs
--- 5. PKG_EXPEDIENTE
---
--- ============================================================================
--- CAMBIOS  DE ADRY:
--- ============================================================================
---
--- PKG_PERSONAL:
---   - Agregados campos: PRIMER_APELLIDO, SEGUNDO_APELLIDO
---   - Agregado campo: HORARIO_TRABAJO (FK a AGENDA_HORARIO)
---   - Validación de correo electrónico único
---   - Validación de citas asociadas antes de eliminar
---
--- PKG_MEDICO:
---   - Sin campo FECHA_CONTRATACION (no existe en tabla MEDICO)
---   - Campo ID_HORARIO se copia automáticamente desde PERSONAL.HORARIO_TRABAJO
---   - Validación de especialidad y personal existente
---   - Validación de citas asociadas antes de eliminar
---
--- PKG_PACIENTE:
---   - Agregados campos: PRIMER_APELLIDO, SEGUNDO_APELLIDO
---   - Sin campos PROVINCIA, CANTON, DISTRITO (no existen en tabla PACIENTE)
---   - Validación de cédula única
---   - Validación de citas asociadas antes de eliminar
---
--- PKG_CITA:
---   - Usar columnas: ID_ESTADO, FECHA, HORA_AGENDADA_INICIO, HORA_AGENDADA_FIN
---   - Agregado parámetro: PIN_ID_ESTADO (obligatorio)
---   - Agregado parámetro: PIN_ID_CONSULTORIO (obligatorio)
---   - Validación de disponibilidad del médico según AGENDA_HORARIO
---   - Validación de día de semana (solo Lunes-Viernes)
---   - Validación de turno (Mañana 07:00-13:00, Tarde 13:00-19:00)
---   - Función privada: CONVERTIR_DIA_SEMANA (Oracle format → AGENDA_HORARIO format)
---   - Procedimiento privado: VALIDAR_DISPONIBILIDAD_MEDICO
---   - Procedimiento público: CANCELAR_CITA (cambiar estado y motivo)
---
--- PKG_EXPEDIENTE:
---   - Operaciones: CREAR y ACTUALIZAR (sin borrado)
---   - Campo CREADO_EN se establece automáticamente con SYSDATE
---   - Validación de paciente único (un expediente por paciente)
---   - Solo se pueden actualizar las NOTAS del expediente
---
--- ============================================================================
-
 --------------------------
 -- PERSONAL
 --------------------------
@@ -56,8 +6,7 @@
 -----------
 CREATE OR REPLACE PACKAGE pkg_personal AS
 
--- INSERTAR PERSONAL
--- Cambio de Adry: Agregados primer_apellido, segundo_apellido, horario_trabajo
+    -- INSERTAR PERSONAL
     PROCEDURE agregar_personal (
         pin_primer_nombre      IN VARCHAR2,
         pin_segundo_nombre     IN VARCHAR2,
@@ -76,8 +25,7 @@ CREATE OR REPLACE PACKAGE pkg_personal AS
         pout_mensaje           OUT VARCHAR2
     );
 
--- EDITAR PERSONAL
--- Cambio de Adry: Agregados primer_apellido, segundo_apellido, horario_trabajo
+    -- EDITAR PERSONAL
     PROCEDURE editar_personal (
         pin_id_personal        IN NUMBER,
         pin_primer_nombre      IN VARCHAR2,
@@ -97,7 +45,7 @@ CREATE OR REPLACE PACKAGE pkg_personal AS
         pout_mensaje           OUT VARCHAR2
     );
 
--- ELIMINAR PERSONAL
+    -- ELIMINAR PERSONAL
     PROCEDURE eliminar_personal (
         pin_id_personal IN NUMBER,
         pout_resultado  OUT NUMBER,
@@ -111,8 +59,7 @@ END pkg_personal;
 --BODY
 ------
 CREATE OR REPLACE PACKAGE BODY pkg_personal AS
---INSERT PERSONAL
--- Cambio de Adry: Agregados primer_apellido, segundo_apellido, horario_trabajo
+    --INSERT PERSONAL
     PROCEDURE agregar_personal (
         pin_primer_nombre      IN VARCHAR2,
         pin_segundo_nombre     IN VARCHAR2,
@@ -135,7 +82,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
         var_campos_faltantes VARCHAR2(4000) := '';
         con_salto            CONSTANT VARCHAR2(2) := chr(10);
 
--- Cursor para validar correo existente
+        -- Cursor para validar correo existente
         CURSOR c_personal_correo (
             p_correo VARCHAR2
         ) IS
@@ -155,7 +102,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
                                     || '- Primer nombre'
                                     || con_salto;
         END IF;
--- Cambio de Adry: Validación de primer apellido
+
         IF TRIM(pin_primer_apellido) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Primer apellido'
@@ -232,7 +179,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
             RETURN;
         END IF;
 --INSERT
--- Cambio de Adry: Agregados primer_apellido, segundo_apellido, horario_trabajo
         INSERT INTO personal (
             primer_nombre,
             segundo_nombre,
@@ -275,7 +221,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
     END;
 
 --EDITAR
--- Cambio de Adry: Agregados primer_apellido, segundo_apellido, horario_trabajo
     PROCEDURE editar_personal (
         pin_id_personal        IN NUMBER,
         pin_primer_nombre      IN VARCHAR2,
@@ -314,7 +259,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
                                     || con_salto;
         END IF;
 
--- Cambio de Adry: Validación de primer apellido
         IF TRIM(pin_primer_apellido) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Primer apellido'
@@ -368,7 +312,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
                                     || '- Horario de trabajo'
                                     || con_salto;
         END IF;
---VALIDAR SI HAY ERRORES
+        --VALIDAR SI HAY ERRORES
         IF var_campos_faltantes IS NOT NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'Los siguientes campos son obligatorios:'
@@ -377,7 +321,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
             RETURN;
         END IF;
 
--- Validar que el ID exista
+        -- Validar que el ID exista
         SELECT
             COUNT(*)
         INTO existe
@@ -392,7 +336,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
             RETURN;
         END IF;
 
--- Validar correo duplicado (excluyendo el mismo registro)
+        -- Validar correo duplicado (excluyendo el mismo registro)
         SELECT
             COUNT(*)
         INTO existe
@@ -408,8 +352,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
             RETURN;
         END IF;
 
--- UPDATE
--- Cambio de Adry: Agregados primer_apellido, segundo_apellido, horario_trabajo
+        -- UPDATE
         UPDATE personal
         SET
             primer_nombre = pin_primer_nombre,
@@ -441,7 +384,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
         RETURN;
     END;
 
---ELIMINAR
+    --ELIMINAR
     PROCEDURE eliminar_personal (
         pin_id_personal IN NUMBER,
         pout_resultado  OUT NUMBER,
@@ -451,14 +394,14 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
         tiene_citas  NUMBER;
         tiene_agenda NUMBER;
     BEGIN
--- Validar ID
+        -- Validar ID
         IF pin_id_personal IS NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'El ID del personal es obligatorio';
             RETURN;
         END IF;
 
--- Validar que el ID exista
+        -- Validar que el ID exista
         SELECT
             COUNT(*)
         INTO existe
@@ -522,8 +465,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
             RETURN;
         END IF;
 
--- DELETE
---Borrrar agenda_medica
+        -- DELETE
         DELETE FROM agenda_medica
         WHERE
             id_medico IN (
@@ -534,7 +476,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
                 WHERE
                     id_personal = pin_id_personal
             );
---BORRAR RELACIONES
+        --BORRAR RELACIONES
         DELETE FROM medico_especialidad
         WHERE
             id_medico IN (
@@ -553,7 +495,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_personal AS
         DELETE FROM contrato
         WHERE
             id_personal = pin_id_personal;
---BORRAR PERSONAL
+        --BORRAR PERSONAL
         DELETE FROM personal
         WHERE
             id_personal = pin_id_personal;
@@ -629,7 +571,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
         var_campos_faltantes    VARCHAR2(4000) := '';
         con_salto               CONSTANT VARCHAR2(2) := chr(10);
 
--- Cursor para validar que el personal exista
+        -- Cursor para validar que el personal exista
         CURSOR c_personal (
             p_id_personal NUMBER
         ) IS
@@ -642,7 +584,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
 
         v_id_personal           personal.id_personal%TYPE;
     BEGIN
--- Validaciones de obligatorios
+        -- Validaciones de obligatorios
         IF pin_id_personal IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Personal'
@@ -655,7 +597,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
                                     || con_salto;
         END IF;
 
---VALIDAR SI HAY ERRORES
+        --VALIDAR SI HAY ERRORES
         IF var_campos_faltantes IS NOT NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'Los siguientes campos son obligatorios:'
@@ -664,7 +606,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             RETURN;
         END IF;
 
--- Validar que el personal exista
+        -- Validar que el personal exista
         var_existe_personal := 0;
         OPEN c_personal(pin_id_personal);
         FETCH c_personal INTO v_id_personal;
@@ -678,7 +620,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             RETURN;
         END IF;
 
--- Validar que el personal no sea ya médico
+        -- Validar que el personal no sea ya médico
         SELECT
             COUNT(*)
         INTO var_existe_medico
@@ -693,7 +635,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             RETURN;
         END IF;
 
--- Validar que la especialidad exista
+        -- Validar que la especialidad exista
         SELECT
             COUNT(*)
         INTO var_existe_especialidad
@@ -708,13 +650,11 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             RETURN;
         END IF;
 
--- INSERT en MEDICO
--- Cambio de Adry: Sin FECHA_CONTRATACION (no existe en tabla MEDICO)
--- Cambio de Adry: Copiar HORARIO_TRABAJO del PERSONAL a MEDICO.ID_HORARIO automáticamente
+        -- INSERT en MEDICO
         DECLARE
             var_horario_personal NUMBER;
         BEGIN
--- Obtener el HORARIO_TRABAJO del personal
+        -- Obtener el HORARIO_TRABAJO del personal
             BEGIN
                 SELECT
                     horario_trabajo
@@ -731,7 +671,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
                     var_horario_personal := NULL;
             END;
 
--- Insertar médico con el horario del personal (puede ser NULL)
+            -- Insertar médico con el horario del personal (puede ser NULL)
             INSERT INTO medico (
                 id_personal,
                 id_horario
@@ -747,7 +687,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             RETURN;
         END IF;
 
--- INSERT en MEDICO_ESPECIALIDAD
+        -- INSERT en MEDICO_ESPECIALIDAD
         INSERT INTO medico_especialidad (
             id_medico,
             id_especialidad,
@@ -771,7 +711,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
         RETURN;
     END agregar_medico;
 
--- EDITAR MÉDICO
+    -- EDITAR MÉDICO
     PROCEDURE editar_medico (
         pin_id_medico       IN NUMBER,
         pin_nombre          IN VARCHAR2,
@@ -789,13 +729,13 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
         var_segundo_nombre      VARCHAR2(200);
         var_pos                 NUMBER;
     BEGIN
--- Validar ID médico
+        -- Validar ID médico
         IF pin_id_medico IS NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'Debe seleccionar un médico';
             RETURN;
         END IF;
---Validar nombre
+        --Validar nombre
         var_pos := instr(
             trim(pin_nombre),
             ' '
@@ -816,7 +756,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             );
         END IF;
 
--- Validaciones de campos obligatorios
+        -- Validaciones de campos obligatorios
 
         IF pin_id_especialidad IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
@@ -824,7 +764,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
                                     || con_salto;
         END IF;
 
---VALIDAR SI HAY ERRORES
+        --VALIDAR SI HAY ERRORES
         IF var_campos_faltantes IS NOT NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'Los siguientes campos son obligatorios:'
@@ -833,7 +773,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             RETURN;
         END IF;
 
--- Validar que el médico exista y obtener ID_PERSONAL
+        -- Validar que el médico exista y obtener ID_PERSONAL
         SELECT
             COUNT(*)
         INTO var_existe_medico
@@ -856,7 +796,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
         WHERE
             id_medico = pin_id_medico;
 
--- Validar que la especialidad exista
+        -- Validar que la especialidad exista
         SELECT
             COUNT(*)
         INTO var_existe_especialidad
@@ -871,7 +811,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             RETURN;
         END IF;
 
--- Actualizar datos del PERSONAL	
+        -- Actualizar datos del PERSONAL	
         UPDATE personal
         SET
             primer_nombre = var_primer_nombre,
@@ -886,8 +826,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             RETURN;
         END IF;
 
--- Actualizar especialidad del médico
--- Cambio de Adry: Actualizar usando la fecha DESDE, no FECHA_CONTRATACION
+        -- Actualizar especialidad del médico
         UPDATE medico_especialidad
         SET
             id_especialidad = pin_id_especialidad
@@ -907,7 +846,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
         RETURN;
     END editar_medico;
 
--- ELIMINAR MÉDICO
+    -- ELIMINAR MÉDICO
     PROCEDURE eliminar_medico (
         pin_id_medico  IN NUMBER,
         pout_resultado OUT NUMBER,
@@ -916,14 +855,14 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
         v_existe_medico NUMBER;
         tiene_citas     NUMBER;
     BEGIN
--- Validar ID
+        -- Validar ID
         IF pin_id_medico IS NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'El ID del médico es obligatorio';
             RETURN;
         END IF;
 
--- Validar que el médico exista
+        -- Validar que el médico exista
         SELECT
             COUNT(*)
         INTO v_existe_medico
@@ -952,7 +891,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
             RETURN;
         END IF;
 
--- Borrar atenciones de las citas de este médico
+        -- Borrar atenciones de las citas de este médico
         DELETE FROM atencion at
         WHERE
             at.id_cita IN (
@@ -972,7 +911,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
                     )
             );
 
--- Borrar citas del médico o de su agenda
+        -- Borrar citas del médico o de su agenda
         DELETE FROM cita
         WHERE
             id_medico = pin_id_medico
@@ -985,17 +924,17 @@ CREATE OR REPLACE PACKAGE BODY pkg_medico AS
                     a.id_medico = pin_id_medico
             );
 
--- Borrar agenda médica
+        -- Borrar agenda médica
         DELETE FROM agenda_medica
         WHERE
             id_medico = pin_id_medico;
 
--- Borrar especialidades
+        -- Borrar especialidades
         DELETE FROM medico_especialidad
         WHERE
             id_medico = pin_id_medico;
 
--- Borrar médico
+        -- Borrar médico
         DELETE FROM medico
         WHERE
             id_medico = pin_id_medico;
@@ -1069,8 +1008,7 @@ END pkg_paciente;
 --BODY
 ------
 CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
---INSERT PACIENTE
--- Cambio de Adry: Sin provincia, canton, distrito (no existen en tabla PACIENTE)
+    --INSERT PACIENTE
     PROCEDURE agregar_paciente (
         pin_cedula             IN VARCHAR2,
         pin_primer_nombre      IN VARCHAR2,
@@ -1092,7 +1030,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
         var_campos_faltantes VARCHAR2(4000) := '';
         con_salto            CONSTANT VARCHAR2(2) := chr(10);
 
--- Cursor para validar cédula existente
+        -- Cursor para validar cédula existente
         CURSOR c_paciente_cedula (
             p_cedula VARCHAR2
         ) IS
@@ -1105,26 +1043,26 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
 
         v_dummy              NUMBER;
     BEGIN
---Validaciones
---CEDULA
+        --Validaciones
+        --CEDULA
         IF TRIM(pin_cedula) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Cédula'
                                     || con_salto;
         END IF;
---NOMBRE
+        --NOMBRE
         IF TRIM(pin_primer_nombre) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Primer nombre'
                                     || con_salto;
         END IF;
---APELLIDO
+        --APELLIDO
         IF TRIM(pin_primer_apellido) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Primer apellido'
                                     || con_salto;
         END IF;
---FECHA
+        --FECHA
         IF TRIM(pin_fecha_nacimiento) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Fecha de nacimiento'
@@ -1139,31 +1077,31 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
                 pout_mensaje := 'Formato de fecha inválido. Use YYYY-MM-DD';
                 RETURN;
         END;
---SEXO
+        --SEXO
         IF TRIM(pin_sexo) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Sexo'
                                     || con_salto;
         END IF;
---TELEFONO
+        --TELEFONO
         IF TRIM(pin_telefono) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Teléfono'
                                     || con_salto;
         END IF;
---DIRECCION
+        --DIRECCION
         IF TRIM(pin_direccion) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Dirección'
                                     || con_salto;
         END IF;
---CORREO
+        --CORREO
         IF TRIM(pin_correo_electronico) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Correo electrónico'
                                     || con_salto;
         END IF;
---VALIDAR SI HAY ERRORES
+        --VALIDAR SI HAY ERRORES
         IF var_campos_faltantes IS NOT NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'Los siguientes campos son obligatorios:'
@@ -1171,7 +1109,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
                             || var_campos_faltantes;
             RETURN;
         END IF;
--- CÉDULA YA EXISTENTE
+        -- CÉDULA YA EXISTENTE
         existe := 0;
         OPEN c_paciente_cedula(pin_cedula);
         FETCH c_paciente_cedula INTO v_dummy;
@@ -1184,8 +1122,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
             pout_mensaje := 'Ya existe un paciente con la cedula ingresada';
             RETURN;
         END IF;
---INSERT
--- Cambio de Adry: Sin provincia, canton, distrito (no existen en tabla PACIENTE)
+        --INSERT
         INSERT INTO paciente (
             cedula,
             primer_nombre,
@@ -1223,8 +1160,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
         RETURN;
     END;
 
---MODIFICAR PACIENTE
--- Cambio de Adry: Sin provincia, canton, distrito (no existen en tabla PACIENTE)
+    --MODIFICAR PACIENTE
     PROCEDURE editar_paciente (
         pin_id                 IN NUMBER,
         pin_cedula             IN VARCHAR2,
@@ -1247,32 +1183,32 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
         var_campos_faltantes VARCHAR2(4000) := '';
         con_salto            CONSTANT VARCHAR2(2) := chr(10);
     BEGIN
---Validaciones
---ID
+        --Validaciones
+        --ID
         IF pin_id IS NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'El ID del paciente es obligatorio';
             RETURN;
         END IF;
---CEDULA
+        --CEDULA
         IF TRIM(pin_cedula) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Cédula'
                                     || con_salto;
         END IF;
---NOMBRE
+        --NOMBRE
         IF TRIM(pin_primer_nombre) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Primer nombre'
                                     || con_salto;
         END IF;
---APELLIDO
+        --APELLIDO
         IF TRIM(pin_primer_apellido) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Primer apellido'
                                     || con_salto;
         END IF;
---FECHA
+        --FECHA
         IF TRIM(pin_fecha_nacimiento) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Fecha de nacimiento'
@@ -1287,31 +1223,31 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
                 pout_mensaje := 'Formato de fecha inválido. Use YYYY-MM-DD';
                 RETURN;
         END;
---SEXO
+        --SEXO
         IF TRIM(pin_sexo) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Sexo'
                                     || con_salto;
         END IF;
---TELEFONO
+        --TELEFONO
         IF TRIM(pin_telefono) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Teléfono'
                                     || con_salto;
         END IF;
---DIRECCION
+        --DIRECCION
         IF TRIM(pin_direccion) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Dirección'
                                     || con_salto;
         END IF;
---CORREO
+        --CORREO
         IF TRIM(pin_correo_electronico) IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Correo electrónico'
                                     || con_salto;
         END IF;
---VALIDAR SI HAY ERRORES
+        --VALIDAR SI HAY ERRORES
         IF var_campos_faltantes IS NOT NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'Los siguientes campos son obligatorios:'
@@ -1319,7 +1255,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
                             || var_campos_faltantes;
             RETURN;
         END IF;
---ID NO EXISTE
+        --ID NO EXISTE
         SELECT
             COUNT(*)
         INTO existe
@@ -1333,7 +1269,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
             pout_mensaje := 'No existe paciente con el ID ingresado';
             RETURN;
         END IF;
---CEDULA YA EXISTENTE
+        --CEDULA YA EXISTENTE
         SELECT
             COUNT(*)
         INTO existe
@@ -1349,8 +1285,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
             RETURN;
         END IF;
 
---UPDATE
--- Cambio de Adry: Sin provincia, canton, distrito (no existen en tabla PACIENTE)
+        --UPDATE
         UPDATE paciente
         SET
             cedula = pin_cedula,
@@ -1380,7 +1315,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
         RETURN;
     END;
 
---ELIMINAR PACIENTE
+    --ELIMINAR PACIENTE
     PROCEDURE eliminar_paciente (
         pin_id         IN NUMBER,
         pout_resultado OUT NUMBER,
@@ -1390,14 +1325,14 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
         tiene_citas       NUMBER;
         tiene_expedientes NUMBER;
     BEGIN
---Validaciones
---ID
+        --Validaciones
+        --ID
         IF pin_id IS NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'El ID del paciente es obligatorio';
             RETURN;
         END IF;
---ID NO EXISTE
+        --ID NO EXISTE
         SELECT
             COUNT(*)
         INTO existe
@@ -1412,7 +1347,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
             RETURN;
         END IF;
 
---TIENE CITAS ASOCIADAS
+        --TIENE CITAS ASOCIADAS
         SELECT
             COUNT(*)
         INTO tiene_citas
@@ -1427,7 +1362,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
             RETURN;
         END IF;
 
---TIENE EPEDIENTES ASOCIADOS
+        --TIENE EPEDIENTES ASOCIADOS
         SELECT
             COUNT(*)
         INTO tiene_expedientes
@@ -1442,7 +1377,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_paciente AS
             RETURN;
         END IF;
 
---DELETE
+        --DELETE
         DELETE FROM paciente
         WHERE
             id_paciente = pin_id;
@@ -1471,8 +1406,7 @@ END;
 -----------------
 CREATE OR REPLACE PACKAGE pkg_cita AS
 
--- INSERTAR CITA
--- Cambio de Adry: Agregados pin_id_estado y pin_id_consultorio
+    -- INSERTAR CITA
     PROCEDURE agregar_cita (
         pin_id_paciente    IN NUMBER,
         pin_id_medico      IN NUMBER,
@@ -1486,8 +1420,7 @@ CREATE OR REPLACE PACKAGE pkg_cita AS
         pout_mensaje       OUT VARCHAR2
     );
 
--- EDITAR CITA
--- Cambio de Adry: Agregado pin_id_consultorio
+    -- EDITAR CITA
     PROCEDURE editar_cita (
         pin_id_cita               IN NUMBER,
         pin_id_paciente           IN NUMBER,
@@ -1503,7 +1436,7 @@ CREATE OR REPLACE PACKAGE pkg_cita AS
         pout_mensaje              OUT VARCHAR2
     );
 
--- ELIMINAR CITA
+    -- ELIMINAR CITA
     PROCEDURE eliminar_cita (
         pin_id_cita    IN NUMBER,
         pout_resultado OUT NUMBER,
@@ -1525,7 +1458,6 @@ END;
 CREATE OR REPLACE PACKAGE BODY pkg_cita AS
 
 -- FUNCION PRIVADA
--- Cambio de Adry: Convertir día de Oracle (1=Domingo) a formato AGENDA_HORARIO (1=Lunes)
     FUNCTION convertir_dia_semana (
         pin_fecha DATE
     ) RETURN NUMBER IS
@@ -1538,7 +1470,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
         FROM
             dual;
 
--- Convertir formato Oracle a AGENDA_HORARIO
+        -- Convertir formato Oracle a AGENDA_HORARIO
         var_dia_agenda :=
             CASE var_dia_oracle
                 WHEN '1' THEN
@@ -1560,9 +1492,8 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
         RETURN var_dia_agenda;
     END convertir_dia_semana;
 
--- PROCEDIMIENTO PRIVADO
--- Cambio de Adry: Validar disponibilidad del médico según AGENDA_HORARIO
--- Verifica día de semana, horario y disponibilidad
+    -- PROCEDIMIENTO PRIVADO
+    -- Verifica día de semana, horario y disponibilidad
     PROCEDURE validar_disponibilidad_medico (
         pin_id_medico       IN NUMBER,
         pin_fecha           IN DATE,
@@ -1578,17 +1509,17 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
         var_horario_texto   VARCHAR2(500);
         var_tiene_horario   NUMBER := 0;
     BEGIN
--- Obtener día de la semana convertido
+        -- Obtener día de la semana convertido
         var_dia_semana_num := convertir_dia_semana(pin_fecha);
 
--- Verificar si es fin de semana (Sábado=6, Domingo=7)
+        -- Verificar si es fin de semana (Sábado=6, Domingo=7)
         IF var_dia_semana_num >= 6 THEN
             pout_horario_valido := 0;
             pout_mensaje := 'No se pueden agendar citas los fines de semana. Por favor seleccione un día entre Lunes y Viernes.';
             RETURN;
         END IF;
 
--- Verificar si el médico tiene horario configurado
+        -- Verificar si el médico tiene horario configurado
         SELECT
             COUNT(*)
         INTO var_tiene_horario
@@ -1607,7 +1538,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
         var_hora_inicio_str := to_char(pin_hora_ini, 'HH24:MI');
         var_hora_fin_str := to_char(pin_hora_fin, 'HH24:MI');
 
--- Verificar si existe una agenda para este médico en este día y turno
+        -- Verificar si existe una agenda para este médico en este día y turno
         SELECT
             COUNT(*)
         INTO pout_horario_valido
@@ -1621,7 +1552,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             AND var_hora_fin_str <= ah.hora_fin;
 
         IF pout_horario_valido = 0 THEN
--- Obtener horarios disponibles del médico para mostrar en el mensaje
+        -- Obtener horarios disponibles del médico para mostrar en el mensaje
             BEGIN
                 SELECT
                     LISTAGG(ah.horario
@@ -1658,8 +1589,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
     END validar_disponibilidad_medico;
 
 -- INSERTAR CITA
--- Cambio de Adry: Ajustado para usar columnas correctas de CITA (ID_ESTADO, FECHA, HORA_AGENDADA_INICIO, HORA_AGENDADA_FIN, OBSERVACIONES)
--- Cambio de Adry: Agregados pin_id_estado y pin_id_consultorio como parámetros
     PROCEDURE agregar_cita (
         pin_id_paciente    IN NUMBER,
         pin_id_medico      IN NUMBER,
@@ -1683,7 +1612,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
         con_salto            CONSTANT VARCHAR2(2) := chr(10);
     BEGIN
 
--- Validaciones de campos obligatorios
+        -- Validaciones de campos obligatorios
         IF pin_id_paciente IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Paciente'
@@ -1714,7 +1643,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
                                     || con_salto;
         END IF;
 
--- Cambio de Adry: Validación de estado y consultorio
         IF pin_id_estado IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Estado'
@@ -1735,7 +1663,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Conversión de fecha y horas
+        -- Conversión de fecha y horas
         BEGIN
             var_fecha := TO_DATE ( pin_fecha, 'DD/MM/YYYY' );
         EXCEPTION
@@ -1773,7 +1701,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Validar existencia de Paciente y Médico
+        -- Validar existencia de Paciente y Médico
         SELECT
             COUNT(*)
         INTO var_count
@@ -1802,7 +1730,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Cambio de Adry: Validar disponibilidad del médico usando procedimiento privado
         DECLARE
             var_horario_valido  NUMBER := 0;
             var_mensaje_horario VARCHAR2(500);
@@ -1823,7 +1750,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             END IF;
 
         END;
--- Validar que no exista otra cita en el mismo rango
+        -- Validar que no exista otra cita en el mismo rango
         SELECT
             COUNT(*)
         INTO var_citas
@@ -1839,8 +1766,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             raise_application_error(-20012, 'Ya existe otra cita en ese rango de horas para ese médico/consultorio');
         END IF;
 
--- INSERT en tabla CITA
--- Cambio de Adry: Usar columnas correctas con id_estado y id_consultorio como parámetros
+        -- INSERT en tabla CITA
         INSERT INTO cita (
             id_paciente,
             id_medico,
@@ -1873,8 +1799,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
     END;
 
 -- EDITAR CITA
--- Cambio de Adry: Ajustado para usar columnas correctas de CITA con ID_ESTADO y HORA_AGENDADA_INICIO/FIN
--- Cambio de Adry: Agregado pin_id_consultorio como parámetro
     PROCEDURE editar_cita (
         pin_id_cita               IN NUMBER,
         pin_id_paciente           IN NUMBER,
@@ -1898,7 +1822,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
         var_campos_faltantes VARCHAR2(4000) := '';
         con_salto            CONSTANT VARCHAR2(2) := chr(10);
     BEGIN
--- Validar ID de cita
+        -- Validar ID de cita
         IF pin_id_cita IS NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'El ID de la cita es obligatorio';
@@ -1919,7 +1843,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Validaciones básicas
+        -- Validaciones básicas
         IF pin_id_paciente IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Paciente'
@@ -1956,7 +1880,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
                                     || con_salto;
         END IF;
 
--- Cambio de Adry: Validación de consultorio
         IF pin_id_consultorio IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Consultorio'
@@ -1971,7 +1894,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Conversión de fecha y horas
+        -- Conversión de fecha y horas
         BEGIN
             var_fecha := TO_DATE ( pin_fecha, 'DD/MM/YYYY' );
         EXCEPTION
@@ -2009,7 +1932,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Validar existencia de Paciente, Médico y Estado
+        -- Validar existencia de Paciente, Médico y Estado
         SELECT
             COUNT(*)
         INTO var_count
@@ -2052,7 +1975,6 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Cambio de Adry: Validar disponibilidad del médico usando procedimiento privado
         DECLARE
             var_horario_valido  NUMBER := 0;
             var_mensaje_horario VARCHAR2(500);
@@ -2074,7 +1996,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
 
         END;
 
--- Validar que no exista otra cita en el mismo rango
+        -- Validar que no exista otra cita en el mismo rango
         SELECT
             COUNT(*)
         INTO var_citas
@@ -2090,9 +2012,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             raise_application_error(-20012, 'Ya existe otra cita en ese rango de horas para ese médico/consultorio');
         END IF;
 
--- UPDATE de la cita
--- Cambio de Adry: Usar columnas correctas (ID_ESTADO, FECHA, HORA_AGENDADA_INICIO, HORA_AGENDADA_FIN, ID_MOTIVO_CANCELACION, OBSERVACIONES)
--- Cambio de Adry: Agregado ID_CONSULTORIO en el UPDATE
+        -- UPDATE de la cita
         UPDATE cita
         SET
             id_paciente = pin_id_paciente,
@@ -2122,20 +2042,20 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
         WHEN OTHERS THEN
             pout_resultado := 0;
             -- Coloque una observación 
-            IF SQLCODE = -20022 THEN
+            IF sqlcode = -20022 THEN
                 pout_mensaje := 'Coloque una observacion';
             -- Si el error viene del trigger por fecha en el pasado
-            ELSIF SQLCODE = -20020 THEN
+            ELSIF sqlcode = -20020 THEN
                 pout_mensaje := 'La fecha de la cita no puede estar en el pasado';
             
             -- Opcional: si querés manejar también el del trigger validar_rango_cita
-            ELSIF SQLCODE = -20010 THEN
+            ELSIF sqlcode = -20010 THEN
                 pout_mensaje := 'La cita no puede ser en una fecha/hora anterior a la actual';
-            
             ELSE
                 -- Cualquier otro error: limpiamos el ORA-xxxxx
-                pout_mensaje := REGEXP_REPLACE(SQLERRM, '^ORA-[0-9]+: *', '');
+                pout_mensaje := regexp_replace(sqlerrm, '^ORA-[0-9]+: *', '');
             END IF;
+
             RETURN;
     END;
 
@@ -2148,7 +2068,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
 
         var_count NUMBER;
 
--- Cursor para verificar atenciones asociadas a la cita
+        -- Cursor para verificar atenciones asociadas a la cita
         CURSOR c_atencion_cita (
             p_id_cita NUMBER
         ) IS
@@ -2181,7 +2101,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Validar que no tenga atenciones asociadas
+        -- Validar que no tenga atenciones asociadas
         var_count := 0;
         OPEN c_atencion_cita(pin_id_cita);
         FETCH c_atencion_cita INTO v_dummy;
@@ -2229,7 +2149,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Validar que la cita exista
+        -- Validar que la cita exista
         SELECT
             COUNT(*)
         INTO var_count
@@ -2244,8 +2164,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
             RETURN;
         END IF;
 
--- Obtener ID del estado "Cancelada"
--- Cambio de Adry: Buscar dinámicamente en vez de usar ID=2 hardcoded
+        -- Obtener ID del estado "Cancelada"
         BEGIN
             SELECT
                 id_estado
@@ -2261,13 +2180,13 @@ CREATE OR REPLACE PACKAGE BODY pkg_cita AS
                 pout_mensaje := 'No existe el estado "Cancelada" en la base de datos';
                 RETURN;
         END;
-    -- Asignar observaciones por defecto si no se proporcionan
-        var_observaciones := TRIM(pin_observaciones);
+        -- Asignar observaciones por defecto si no se proporcionan
+        var_observaciones := trim(pin_observaciones);
         IF var_observaciones IS NULL THEN
             var_observaciones := 'Cancelada';
         END IF;
 
--- Actualizar la cita a estado Cancelada
+        -- Actualizar la cita a estado Cancelada
         UPDATE cita
         SET
             id_estado = var_id_estado_canc,
@@ -2298,11 +2217,9 @@ END;
 -----------
 -- CABECERA
 -----------
--- Cambio de Adry: Nuevo paquete para gestión de expedientes médicos
 CREATE OR REPLACE PACKAGE pkg_expediente AS
 
--- CREAR EXPEDIENTE
--- Cambio de Adry: Crear expediente con fecha automática SYSDATE
+    -- CREAR EXPEDIENTE
     PROCEDURE crear_expediente (
         pin_id_paciente IN NUMBER,
         pin_notas       IN VARCHAR2,
@@ -2310,8 +2227,7 @@ CREATE OR REPLACE PACKAGE pkg_expediente AS
         pout_mensaje    OUT VARCHAR2
     );
 
--- ACTUALIZAR EXPEDIENTE
--- Cambio de Adry: Solo permite actualizar NOTAS, no se puede borrar
+    -- ACTUALIZAR EXPEDIENTE
     PROCEDURE actualizar_expediente (
         pin_id_expediente IN NUMBER,
         pin_notas         IN VARCHAR2,
@@ -2327,8 +2243,7 @@ END pkg_expediente;
 ------
 CREATE OR REPLACE PACKAGE BODY pkg_expediente AS
 
--- CREAR EXPEDIENTE
--- Cambio de Adry: Validar que paciente exista y no tenga expediente previo
+    -- CREAR EXPEDIENTE
     PROCEDURE crear_expediente (
         pin_id_paciente IN NUMBER,
         pin_notas       IN VARCHAR2,
@@ -2341,7 +2256,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_expediente AS
         var_campos_faltantes  VARCHAR2(4000) := '';
         con_salto             CONSTANT VARCHAR2(2) := chr(10);
     BEGIN
--- Validación de campo obligatorio
+        -- Validación de campo obligatorio
         IF pin_id_paciente IS NULL THEN
             var_campos_faltantes := var_campos_faltantes
                                     || '- Paciente'
@@ -2356,7 +2271,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_expediente AS
             RETURN;
         END IF;
 
--- Validar que el paciente exista
+        -- Validar que el paciente exista
         SELECT
             COUNT(*)
         INTO var_existe_paciente
@@ -2371,7 +2286,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_expediente AS
             RETURN;
         END IF;
 
--- Validar que el paciente no tenga ya un expediente
+        -- Validar que el paciente no tenga ya un expediente
         SELECT
             COUNT(*)
         INTO var_existe_expediente
@@ -2386,8 +2301,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_expediente AS
             RETURN;
         END IF;
 
--- INSERT en EXPEDIENTE
--- Cambio de Adry: CREADO_EN se establece automáticamente con SYSDATE
+        -- INSERT en EXPEDIENTE
         INSERT INTO expediente (
             id_paciente,
             creado_en,
@@ -2409,8 +2323,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_expediente AS
         RETURN;
     END crear_expediente;
 
--- ACTUALIZAR EXPEDIENTE
--- Cambio de Adry: Solo se pueden actualizar las NOTAS, no la fecha ni el paciente
+    -- ACTUALIZAR EXPEDIENTE
     PROCEDURE actualizar_expediente (
         pin_id_expediente IN NUMBER,
         pin_notas         IN VARCHAR2,
@@ -2419,14 +2332,14 @@ CREATE OR REPLACE PACKAGE BODY pkg_expediente AS
     ) AS
         var_existe_expediente NUMBER;
     BEGIN
--- Validar ID de expediente
+        -- Validar ID de expediente
         IF pin_id_expediente IS NULL THEN
             pout_resultado := 0;
             pout_mensaje := 'El ID del expediente es obligatorio';
             RETURN;
         END IF;
 
--- Validar que el expediente exista
+        -- Validar que el expediente exista
         SELECT
             COUNT(*)
         INTO var_existe_expediente
@@ -2441,7 +2354,7 @@ CREATE OR REPLACE PACKAGE BODY pkg_expediente AS
             RETURN;
         END IF;
 
--- UPDATE del expediente (solo se pueden actualizar las notas)
+        -- UPDATE del expediente (solo se pueden actualizar las notas)
         UPDATE expediente
         SET
             notas = pin_notas

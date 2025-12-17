@@ -55,7 +55,13 @@ class Cita
       ORDER BY c.id_cita DESC";
 
     $stmt = oci_parse($this->conn, $sql);
-    oci_execute($stmt);
+    $ok = @oci_execute($stmt);
+    if (!$ok) {
+        $e = oci_error($stmt) ?: oci_error($this->conn);
+        oci_free_statement($stmt);
+        error_log('Cita::obtenerTodos: ' . ($e['message'] ?? 'Error Oracle'));
+        return [];
+    }
 
     $rows = [];
     while ($r = oci_fetch_assoc($stmt)) $rows[] = $r;
@@ -90,13 +96,35 @@ class Cita
       oci_bind_by_name($stmt, ':pout_resultado', $resultado, 10);
       oci_bind_by_name($stmt, ':pout_mensaje',   $mensaje,   4000);
 
-      oci_execute($stmt);
+      $ok = @oci_execute($stmt);
+      if (!$ok) {
+          $e = oci_error($stmt) ?: oci_error($this->conn);
+          oci_free_statement($stmt);
+
+          $mensajeOracle = $e['message'] ?? 'Error al cancelar la cita';
+          $mensajeLimpio = $mensajeOracle;
+
+          // Se queda con el texto del ORA-20xxx
+          if (preg_match('/ORA-20\d{3}:\s*(.+?)(?:ORA-|$)/s', $mensajeOracle, $m)) {
+              $mensajeLimpio = trim($m[1]);
+          } else {
+              // fallback: primera línea
+              $mensajeLimpio = trim(strtok($mensajeOracle, "\n"));
+          }
+
+          return [
+              'resultado' => 0,
+              'mensaje'   => $mensajeLimpio,
+          ];
+      }
+
       oci_free_statement($stmt);
 
       return [
           'resultado' => $resultado,
           'mensaje'   => $mensaje,
       ];
+
   }
   public function obtenerEstadosCita(): array
   {

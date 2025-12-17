@@ -41,7 +41,6 @@ INSERT INTO CLINICA (NOMBRE, CODIGO_CLINICA, TELEFONO) VALUES ('Clínica Los Án
 COMMIT;
 
 -- 5. AGENDA_HORARIO
--- Cambio de Adry: Columna NOMBRE renombrada a HORARIO
 INSERT INTO AGENDA_HORARIO (ID_HORARIO, HORARIO, DIA_SEMANA, TURNO, HORA_INICIO, HORA_FIN) VALUES (1, 'Lunes Mañana', 1, 'M', '07:00', '13:00');
 INSERT INTO AGENDA_HORARIO (ID_HORARIO, HORARIO, DIA_SEMANA, TURNO, HORA_INICIO, HORA_FIN) VALUES (2, 'Lunes Tarde', 1, 'T', '13:00', '19:00');
 INSERT INTO AGENDA_HORARIO (ID_HORARIO, HORARIO, DIA_SEMANA, TURNO, HORA_INICIO, HORA_FIN) VALUES (3, 'Martes Mañana', 2, 'M', '07:00', '13:00');
@@ -166,8 +165,6 @@ COMMIT;
 -- ==================== TABLAS CON DEPENDENCIAS ====================
 
 -- 7. MEDICO (depende de PERSONAL y AGENDA_HORARIO)
--- Cambio de Adry: Agregado ID_HORARIO para que los médicos tengan horarios visibles
--- ID_HORARIO: 1=Lunes Mañana, 2=Lunes Tarde, 3=Martes Mañana, etc. (valores 1-10)
 INSERT INTO MEDICO (ID_PERSONAL, ID_HORARIO) VALUES (1, 1);   -- Lunes Mañana
 INSERT INTO MEDICO (ID_PERSONAL, ID_HORARIO) VALUES (2, 2);   -- Lunes Tarde
 INSERT INTO MEDICO (ID_PERSONAL, ID_HORARIO) VALUES (6, 3);   -- Martes Mañana
@@ -227,7 +224,6 @@ INSERT INTO CONSULTORIO (ID_CLINICA, NOMBRE, TIPO) VALUES (2, 'Consultorio 10', 
 COMMIT;
 
 -- 10. AGENDA_MEDICA (depende de MEDICO, CONSULTORIO y AGENDA_HORARIO) - CRÍTICO PARA CITAS
--- Cambio de Adry: Agregada columna ID_HORARIO para relacionar con AGENDA_HORARIO (valores de 1-10)
 INSERT INTO AGENDA_MEDICA (ID_AGENDA, ID_MEDICO, ID_CONSULTORIO, ID_HORARIO, VIGENTE_DESDE, VIGENTE_HASTA) VALUES (1, 1, 1, 1, TO_DATE('2024-01-01', 'YYYY-MM-DD'), NULL);
 INSERT INTO AGENDA_MEDICA (ID_AGENDA, ID_MEDICO, ID_CONSULTORIO, ID_HORARIO, VIGENTE_DESDE, VIGENTE_HASTA) VALUES (2, 2, 2, 2, TO_DATE('2024-01-01', 'YYYY-MM-DD'), NULL);
 INSERT INTO AGENDA_MEDICA (ID_AGENDA, ID_MEDICO, ID_CONSULTORIO, ID_HORARIO, VIGENTE_DESDE, VIGENTE_HASTA) VALUES (3, 3, 3, 3, TO_DATE('2024-01-01', 'YYYY-MM-DD'), NULL);
@@ -397,24 +393,3 @@ INSERT INTO EXPEDIENTE (ID_PACIENTE, CREADO_EN, NOTAS) VALUES (18, TO_DATE('01-0
 INSERT INTO EXPEDIENTE (ID_PACIENTE, CREADO_EN, NOTAS) VALUES (19, TO_DATE('10-03-2024', 'DD-MM-YYYY'), 'Análisis de laboratorio pendiente.');
 INSERT INTO EXPEDIENTE (ID_PACIENTE, CREADO_EN, NOTAS) VALUES (20, TO_DATE('20-03-2024', 'DD-MM-YYYY'), 'Paciente remitido a especialista.');
 COMMIT;
-
--- ============================================================================
--- FIN DEL SCRIPT DE INSERTS
--- Script completo con todos los datos de prueba para el sistema
--- Total de registros:
---   - ESTADO_CITA: 5
---   - MOTIVO_CANCELACION: 5
---   - ESPECIALIDAD: 10
---   - CLINICA: 2
---   - AGENDA_HORARIO: 10 (Lunes-Viernes, Mañana/Tarde)
---   - PACIENTE: 62 registros
---   - PERSONAL: 40 registros
---   - MEDICO: 20 registros
---   - MEDICO_ESPECIALIDAD: 20 registros
---   - CONSULTORIO: 10 (5 por clínica)
---   - AGENDA_MEDICA: 20 registros
---   - CITA: 27 registros
---   - ATENCION: 20 registros
---   - CONTRATO: 20 registros
---   - EXPEDIENTE: 19 registros
--- ============================================================================

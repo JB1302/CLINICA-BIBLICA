@@ -1,5 +1,3 @@
--- Cambio de Adry: Script para verificar si el package PKG_CITA está actualizado con los nuevos parámetros
-
 -- Ver la firma del procedimiento editar_cita
 SELECT 
     object_name,
