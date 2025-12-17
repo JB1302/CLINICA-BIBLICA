@@ -173,8 +173,8 @@ $ok = $_GET['ok'] ?? '';
               </select>
             </div>
             <div class="mb-3">
-              <label for="nuevo-notas" class="form-label">Notas</label>
-              <textarea class="form-control" id="nuevo-notas" name="notas" rows="3" maxlength="100"></textarea>
+              <label for="nuevo-notas" class="form-label">Notas (Opcional)</label>
+              <textarea class="form-control" id="nuevo-notas" name="notas" rows="3" maxlength="100" placeholder="Notas iniciales del expediente"></textarea>
               <small class="text-muted">Máximo 100 caracteres</small>
             </div>
           </div>

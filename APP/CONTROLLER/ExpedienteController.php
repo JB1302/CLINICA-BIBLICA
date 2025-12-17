@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../MODEL/Expediente.php';
 
-// Cambio de Adry: Controlador para gestión de expedientes
+// Controlador para gestión de expedientes
 class ExpedienteController
 {
     private $model;
@@ -21,17 +21,22 @@ class ExpedienteController
         return $this->model->obtenerPorId($idExpediente);
     }
 
-    // Cambio de Adry: Obtener citas del expediente para vista de detalle
+    // Obtener citas del expediente para vista de detalle
     public function obtenerCitasPorExpediente(int $idExpediente): array
     {
         return $this->model->obtenerCitasPorExpediente($idExpediente);
     }
 
-    // Cambio de Adry: Crear expediente desde formulario
+    //  Crear expediente desde formulario
     public function crear(): void
     {
         $idPaciente = (int) ($_POST['id_paciente'] ?? 0);
-        $notas = $_POST['notas'] ?? null;
+        $notas = trim($_POST['notas'] ?? '');
+        
+        // Validar que las notas no estén vacías
+        if (empty($notas)) {
+            $notas = 'Expediente creado';
+        }
 
         $resultado = $this->model->crearExpediente($idPaciente, $notas);
 

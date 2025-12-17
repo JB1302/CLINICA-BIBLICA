@@ -111,9 +111,14 @@ class Expediente
         return $rows;
     }
 
-    // Cambio de Adry: Crear expediente llamando a pkg_expediente.crear_expediente
+    // Crear expediente llamando a pkg_expediente.crear_expediente
     public function crearExpediente(int $idPaciente, ?string $notas = null): array
     {
+        // Asegurar que notas no sea null
+        if ($notas === null || trim($notas) === '') {
+            $notas = 'Expediente creado';
+        }
+        
         $sql = "
             BEGIN
                 pkg_expediente.crear_expediente(
