@@ -10,12 +10,12 @@ class ExpedienteController
     {
         $this->model = new Expediente();
     }
-
+    //  Obtener todos los expedientes
     public function obtenerTodos(): array
     {
         return $this->model->obtenerTodos();
     }
-
+    //  Obtener expediente por ID
     public function obtenerPorId(int $idExpediente): ?array
     {
         return $this->model->obtenerPorId($idExpediente);
@@ -63,7 +63,7 @@ class ExpedienteController
         }
         exit;
     }
-
+    //  Metodo para obtener pacientes sin expediente
     public function obtenerPacientesSinExpediente(): array
     {
         return $this->model->obtenerPacientesSinExpediente();

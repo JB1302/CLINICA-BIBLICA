@@ -48,6 +48,9 @@ class Medico
     return $rows;
   }
 
+  /**
+   * Listar personal disponible para ser asignado como médico
+   */
   public function obtenerPersonalDisponible(): array
   {
     $sql = "

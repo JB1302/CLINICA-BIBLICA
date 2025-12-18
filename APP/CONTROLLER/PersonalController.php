@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../MODEL/Personal.php';
 
 class PersonalController {
+  //  método para listar todo el personal
   public function listarPersonals(): array {
     try {
       return (new Personal())->obtenerTodos();
@@ -10,7 +11,7 @@ class PersonalController {
       return [];
     }
   }
-
+  // metodo para crear un nuevo personal
   public function crearPersonal(array $data): array {
     try {
       return (new Personal())->crear($data);
@@ -22,7 +23,7 @@ class PersonalController {
       ];
     }
   }
-
+  // metodo para actualizar un personal
   public function actualizarPersonal(array $data): array {
     try {
       return (new Personal())->actualizar($data);
@@ -34,7 +35,7 @@ class PersonalController {
       ];
     }
   }
-
+  // metodo para eliminar un personal
   public function eliminarPersonal(int $id): array {
     try {
       return (new Personal())->eliminar($id);

@@ -4,12 +4,12 @@ require_once __DIR__ . '/../config/database.php';
 class Cita
 {
   private $conn;
-
+  // Constructor para inicializar la conexión a la base de datos
   public function __construct()
   {
     $this->conn = Database::get();
   }
-
+  //  método para listar todas las citas
   public function obtenerTodos(): array
   {
     $sql = "SELECT
@@ -53,9 +53,10 @@ class Cita
       LEFT JOIN medico_especialidad me ON me.id_medico = m.id_medico
       LEFT JOIN especialidad e ON e.id_especialidad = me.id_especialidad
       ORDER BY c.id_cita DESC";
-
+    // Ejecutar la consulta
     $stmt = oci_parse($this->conn, $sql);
     $ok = @oci_execute($stmt);
+    // Manejar errores de ejecución
     if (!$ok) {
         $e = oci_error($stmt) ?: oci_error($this->conn);
         oci_free_statement($stmt);
@@ -64,12 +65,14 @@ class Cita
     }
 
     $rows = [];
+    // Obtener los resultados
     while ($r = oci_fetch_assoc($stmt)) $rows[] = $r;
 
     oci_free_statement($stmt);
     return $rows;
   }
 
+  //  método para cancelar una cita
   public function cancelarCita(int $idCita, ?int $idMotivoCancelacion, ?string $observaciones): array
   {
       $sql = "
@@ -83,7 +86,7 @@ class Cita
           );
         END;
       ";
-
+      // Preparar la sentencia
       $stmt = oci_parse($this->conn, $sql);
 
       oci_bind_by_name($stmt, ':pin_id_cita', $idCita);
@@ -95,8 +98,9 @@ class Cita
 
       oci_bind_by_name($stmt, ':pout_resultado', $resultado, 10);
       oci_bind_by_name($stmt, ':pout_mensaje',   $mensaje,   4000);
-
+      // Ejecutar la sentencia
       $ok = @oci_execute($stmt);
+      // Manejar errores de ejecución
       if (!$ok) {
           $e = oci_error($stmt) ?: oci_error($this->conn);
           oci_free_statement($stmt);
@@ -117,7 +121,6 @@ class Cita
               'mensaje'   => $mensajeLimpio,
           ];
       }
-
       oci_free_statement($stmt);
 
       return [
@@ -126,6 +129,7 @@ class Cita
       ];
 
   }
+  //  método para obtener estados de cita
   public function obtenerEstadosCita(): array
   {
       $sql = "SELECT id_estado, nombre_estado FROM estado_cita ORDER BY nombre_estado";
@@ -203,7 +207,7 @@ class Cita
       return $consultorios;
   }
 
-
+    // metodo para crear una nueva cita
     public function crearCita(
     int $idPaciente,
     int $idMedico,
@@ -280,6 +284,7 @@ class Cita
     ];
   }
 
+  //  método para actualizar una cita
   public function actualizarCita(
     int $idCita,
     int $idPaciente,
@@ -358,6 +363,7 @@ class Cita
     ];
   }
 
+  //  método para eliminar una cita
   public function eliminarCita(int $idCita): array
   {
     $sql = "

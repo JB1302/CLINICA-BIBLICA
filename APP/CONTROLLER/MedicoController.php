@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../MODEL/Medico.php';
 
 class MedicoController {
-
+  // método para listar todos los médicos
   public function listarMedicos(): array {
     try {
       return (new Medico())->obtenerTodos();
@@ -11,7 +11,7 @@ class MedicoController {
       return [];
     }
   }
-
+  // método para listar todas las especialidades médicas
   public function listarEspecialidades(): array {
     try {
       return (new Medico())->obtenerEspecialidades();
@@ -20,6 +20,7 @@ class MedicoController {
       return [];
     }
   }
+  // método para listar personal médico disponible
   public function listarPersonalDisponible(): array {
     try {
       return (new Medico())->obtenerPersonalDisponible();
@@ -29,7 +30,7 @@ class MedicoController {
     }
   }
 
-  // === CREATE ===
+  // metodo para crear un nuevo médico
   public function crear(array $data): array {
     try {
       return (new Medico())->crear($data);
@@ -42,7 +43,7 @@ class MedicoController {
     }
   }
 
-  // === UPDATE ===
+  // metodo para actualizar un médico
   public function actualizar(array $data): array {
     try {
       return (new Medico())->actualizar($data);
@@ -55,7 +56,7 @@ class MedicoController {
     }
   }
 
-  // === DELETE ===
+  // metodo para eliminar un médico
   public function eliminar(int $id): array {
     try {
       return (new Medico())->eliminar($id);

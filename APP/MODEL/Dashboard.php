@@ -9,7 +9,7 @@ class Dashboard
   {
     $this->conn = Database::get();
   }
-
+  //  método para obtener citas por estado
   public function citasPorEstado(): array
   {
     $sql = "
@@ -29,7 +29,7 @@ class Dashboard
     oci_free_statement($st);
     return $out;
   }
-
+  //  método para obtener atenciones por médico
   public function atencionesPorMedico(): array
   {
     $sql = "
@@ -51,7 +51,7 @@ class Dashboard
     oci_free_statement($st);
     return $out;
   }
-
+  //  método para obtener pacientes nuevos por mes
   public function pacientesNuevosPorMes(): array
   {
     $sql = "
@@ -71,7 +71,7 @@ class Dashboard
     return $out;
   }
 
-
+// método para obtener KPIs
 public function getKpis(): array {
   // Ajusta el WHERE de paciente si no tienes columna ACTIVO
   $sql = "

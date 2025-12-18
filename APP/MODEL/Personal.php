@@ -10,6 +10,7 @@ class Personal
     $this->conn = Database::get();
   }
 
+  // Obtener todos los personal
   public function obtenerTodos(): array
   {
     // Ordenamiento descendente por ID_PERSONAL para mostrar los más recientes primero
@@ -32,6 +33,7 @@ class Personal
     return $rows;
   }
 
+  //  método para crear un nuevo personal
   public function crear(array $data): array
   {
     $sql = "BEGIN
@@ -146,6 +148,8 @@ class Personal
       'mensaje'   => $mensaje,
     ];
   }
+
+  //  método para actualizar un personal
   public function actualizar(array $data): array
   {
     $sql = "BEGIN
@@ -264,6 +268,7 @@ class Personal
     ];
   }
 
+  //  método para eliminar un personal
   public function eliminar(int $idPersonal): array
   {
     $sql = "BEGIN

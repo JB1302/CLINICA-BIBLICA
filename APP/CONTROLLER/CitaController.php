@@ -28,6 +28,7 @@ require_once __DIR__ . '/../MODEL/Medico.php';
 
 
 class CitaController {
+  //  método para listar todas las citas
   public function listarCitas(): array {
     try {
       return (new Cita())->obtenerTodos();
@@ -36,6 +37,7 @@ class CitaController {
       return [];
     }
   }
+  //  método para listar todos los pacientes
   public function listarPacientes(): array
   {
       try {
@@ -46,7 +48,7 @@ class CitaController {
           return [];
       }
   }
-
+  //  método para listar todos los médicos
   public function listarMedicos(): array
   {
       try {
@@ -58,7 +60,7 @@ class CitaController {
       }
   }
 
-
+  //  método para cancelar una cita
   public function cancelar(array $data): array
   {
       try {
@@ -80,7 +82,7 @@ class CitaController {
           ];
       }
   }
-  
+  //  método para listar estados de cita
   public function listarEstados(): array
   {
       try {
@@ -127,7 +129,7 @@ class CitaController {
           return [];
       }
   }
-
+  //  método para crear una nueva cita
   public function crear(array $data): array {
     try {
       $cita = new Cita();
@@ -150,7 +152,7 @@ class CitaController {
       ];
     }
   }
-
+  //  método para actualizar una cita
   public function actualizar(array $data): array {
     try {
       $cita = new Cita();
@@ -177,7 +179,7 @@ class CitaController {
       ];
     }
   }
-
+  //  método para eliminar una cita
   public function eliminar(int $idCita): array {
     try {
       $cita = new Cita();

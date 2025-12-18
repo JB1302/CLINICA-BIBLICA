@@ -7,7 +7,7 @@ class Paciente {
   public function __construct() {
     $this->conn = Database::get();
   }
-
+  // Obtener todos los pacientes
   public function obtenerTodos(): array {
     $sql = "SELECT ID_PACIENTE, CEDULA, PRIMER_NOMBRE, SEGUNDO_NOMBRE,
                    PRIMER_APELLIDO, SEGUNDO_APELLIDO, TO_CHAR(FECHA_NACIMIENTO, 'YYYY-MM-DD') AS FECHA_NACIMIENTO,
@@ -24,7 +24,7 @@ class Paciente {
     oci_free_statement($stmt);
     return $rows;
   }
-
+  //  método para crear un nuevo paciente
   public function crear(array $data): array {
     $sql = "
       BEGIN
@@ -91,7 +91,7 @@ class Paciente {
       'mensaje' => $mensaje,
     ];
   }
-
+  // metodo para actualizar un paciente
   public function actualizar(array $data): array {
     $sql = "
       BEGIN
@@ -159,7 +159,7 @@ class Paciente {
       'mensaje'   => $mensaje,
     ];
   }
-
+  // metodo para eliminar un paciente
   public function eliminar(int $idPaciente): array {
     $sql = "
       BEGIN
@@ -220,6 +220,7 @@ class Paciente {
       oci_free_statement($stmt);
       return $lista;
   }
+  //  métodos para vistas específicas
   public function obtenerSoloTelefonoFormato506(): array
   {
       $sql = "
@@ -239,6 +240,7 @@ class Paciente {
       oci_free_statement($stmt);
       return $rows;
   }
+  //  método para listar pacientes por provincias
   public function obtenerSoloProvincia(): array
   {
       $sql = "
@@ -259,6 +261,7 @@ class Paciente {
       return $rows;
   }
 
+  //  método para listar pacientes que terminan en ia
   public function obtenerSoloIa(): array
   {
       $sql = "
@@ -279,6 +282,7 @@ class Paciente {
       return $rows;
   }
 
+  //  método para listar pacientes con correo gmail
   public function obtenerSoloGmail(): array
   {
       $sql = "
