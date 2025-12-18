@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../CONTROLLER/CitaController.php';
 
 $controller = new CitaController();
+// Manejo de solicitudes POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
@@ -31,13 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $res = ['resultado' => 0, 'mensaje' => 'Acción no válida'];
           break;
     }
-
+    // Redirigir con mensaje
     header(
         'Location: citas.php?msg=' . urlencode($res['mensaje'])
         . '&ok=' . (int)($res['resultado'] ?? 0)
     );
     exit;
 }
+// Obtener datos para mostrar en la vista
 $citas = $controller->listarCitas();
 $estados = $controller->listarEstados();
 $pacientes = $controller->listarPacientes();
