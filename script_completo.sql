@@ -1,5 +1,25 @@
+ALTER SESSION SET "_ORACLE_SCRIPT"=TRUE; 
+--------------------------------------------------------------------------------
+-- SECCIÓN 1: CREACIÓN DE USUARIO
+-- Se crea el usuario principal de la base de datos (CLINICA) y se le asignan los permisos
+-- Esta sección se debe ejecutar bajo el usuario System
+--------------------------------------------------------------------------------
+/
+//Crear usuario y dar permisos Desde SYSTEM
+CREATE USER clinica IDENTIFIED BY "1234";
+GRANT CONNECT, RESOURCE TO CLINICA;
+ALTER USER CLINICA QUOTA UNLIMITED ON USERS;
+
+SELECT USER FROM DUAL;
+SELECT * FROM USER_ROLE_PRIVS;
+SHOW USER;
+SHOW CON_NAME;
+SELECT USERNAME FROM ALL_USERS WHERE USER
+/
+
 -- =====================================================
--- CREACION DE TABLAS
+-- SECCIÓN 2: CREACIÓN DE TABLAS
+-- Esta sección se ejecuta con el usuario creado
 -- respeta dependencias de FK
 -- Servidor: CLINICA (4.156.223.214:1521/XEPDB1)
 -- Usuario: CLINICA / 1234
@@ -234,7 +254,7 @@ SELECT COUNT(*) as TOTAL_TABLAS_CREADAS FROM user_tables;
 SELECT table_name FROM user_tables ORDER BY table_name;
 
 -- ============================================================================
--- INSERCION DE DATOS EN TABLAS
+-- SECCIÓN 3: INSERCION DE DATOS EN TABLAS
 -- Orden: respeta dependencias de FK
 -- Servidor: CLINICA (4.156.223.214:1521/XEPDB1)
 -- ============================================================================
@@ -630,7 +650,7 @@ COMMIT;
 
 
 -- ============================================================================
--- Script de Paquetes PL/SQL
+-- SECCIÓN 4: Script de Paquetes PL/SQL
 -- Servidor: CLINICA (4.156.223.214:1521/XEPDB1)
 -- ============================================================================
 -- ==================== PERSONAL ====================
@@ -2996,7 +3016,7 @@ END pkg_expediente;
 /
 
 -- ============================================================================
--- Script de Triggers para la base de datos 
+-- SECCIÓN 5: Script de Triggers para la base de datos 
 -- Servidor: CLINICA (4.156.223.214:1521/XEPDB1)
 -- ============================================================================
 --------------------------
@@ -3169,7 +3189,7 @@ BEGIN
 END;
 
 -- ============================================================================
--- Script de Views para la base de datos
+-- SECCIÓN 6: Script de Views para la base de datos
 -- Servidor: CLINICA (4.156.223.214:1521/XEPDB1)
 -- ============================================================================
 --------------------------
